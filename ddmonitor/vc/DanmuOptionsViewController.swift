@@ -113,6 +113,7 @@ class DanmuOptionsViewController: UITableViewController {
         interpreterChars.returnKeyType = .done
         interpreterChars.addTarget(self, action: #selector(interpreterCharsEnd), for: .editingDidEnd)
         interpreterChars.addTarget(self, action: #selector(interpreterCharsEnd), for: .editingDidEndOnExit)
+        interpreterChars.text = "【 [ {"
         
         if let winId = id, winId >= 0 && winId < 9, let opt = mainVC?.ddLayout.players[winId].danmuOptions {
             danmuOptions = opt

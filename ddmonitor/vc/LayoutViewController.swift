@@ -7,9 +7,7 @@
 
 import UIKit
 
-class LayoutViewController: UICollectionViewController {
-    
-//    typealias axis = NSLayoutConstraint.Axis
+class LayoutViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     let layouts: [[String:Any]] = [
         [:],
@@ -42,7 +40,7 @@ class LayoutViewController: UICollectionViewController {
     init() {
         let layout = UICollectionViewFlowLayout()
         super.init(collectionViewLayout: layout)
-//        layout.itemSize = CGSize(width: view.bounds.width/4, height: view.bounds.width/4/316*178)
+        layout.itemSize = CGSize(width: view.bounds.width/4, height: view.bounds.width/4/316*178)
 //        layout.estimatedItemSize = CGSize(width: view.bounds.width/4, height: view.bounds.width/4/316*178)
         
         layout.minimumLineSpacing = 0
@@ -75,6 +73,10 @@ class LayoutViewController: UICollectionViewController {
     
     @objc func closeBtnClick() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+        viewWillLayoutSubviews()
     }
     
     override func viewWillLayoutSubviews() {
