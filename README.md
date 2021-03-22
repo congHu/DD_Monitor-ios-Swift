@@ -25,7 +25,7 @@
 - 欢迎提出
 
 ## 给开发者买杯奶茶
-![qrcode](qrcode.png)
+[qrcode.png](qrcode.png)
 
 ## 开源依赖
 - [https://github.com/Alamofire/Alamofire](https://github.com/Alamofire/Alamofire)
