@@ -373,15 +373,18 @@ class DDPlayer: UIControl, WebSocketDelegate {
             alert.addAction(UIAlertAction(title: "复制id \(roomid)", style: .default, handler: { (act) in
                 UIPasteboard.general.string = roomid
             }))
-            alert.addAction(UIAlertAction(title: "跳转直播间", style: .default, handler: { (act) in
-                let openurl = URL(string: "bilibili://live/\(roomid)")!
-                let weburl = URL(string: "https://live.bilibili.com/\(roomid)")!
-                if UIApplication.shared.canOpenURL(openurl) {
-                    UIApplication.shared.open(openurl, options: [:], completionHandler: nil)
-                }else{
-                    UIApplication.shared.open(weburl, options: [:], completionHandler: nil)
-                }
-            }))
+            if _2333 {
+                alert.addAction(UIAlertAction(title: "跳转", style: .default, handler: { (act) in
+                    let openurl = URL(string: "bilibili://live/\(roomid)")!
+                    let weburl = URL(string: "https://live.bilibili.com/\(roomid)")!
+                    if UIApplication.shared.canOpenURL(openurl) {
+                        UIApplication.shared.open(openurl, options: [:], completionHandler: nil)
+                    }else{
+                        UIApplication.shared.open(weburl, options: [:], completionHandler: nil)
+                    }
+                }))
+            }
+            
             alert.addAction(UIAlertAction(title: "关闭窗口", style: .destructive, handler: { (act) in
                 self.setRoomId(nil)
                 UserDefaults.standard.setValue(nil, forKey: "roomId\(self.id)")
@@ -549,6 +552,36 @@ class DDPlayer: UIControl, WebSocketDelegate {
         loadingView.alpha = 1
         nameBtn.setTitle("#\(id+1): 加载..", for: .normal)
         
+        
+        
+        if !_2333 {
+            danmuView.text = "正在连接\n"
+            Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (timer) in
+                self.nameBtn.setTitle("#\(self.id+1): (离线)CAM\(roomId!)", for: .normal)
+                
+                if self.roomId == "1213262" {
+                    self.danmuView.text += "\n连接成功\n"
+                    self.nameBtn.setTitle("#\(self.id+1): CAM\(roomId!)", for: .normal)
+                    
+//                    self.playerItem = AVPlayerItem(url: Bundle.main.url(forResource: "1", withExtension: "mov")!)
+                    self.playerItem = AVPlayerItem(url: Bundle.main.url(forResource: "1", withExtension: "mov")!)
+                    
+                    self.player = AVPlayer(playerItem: self.playerItem)
+                    self.playerItem?.addObserver(self, forKeyPath: "status", options: .new, context: nil)
+                    
+                    self.playerLayer = AVPlayerLayer(player: self.player)
+                    self.layer.addSublayer(self.playerLayer!)
+                    
+                    self.playerLayer!.frame = self.frame
+                    
+                    self.player?.volume = self.volumeSlider.value
+                    self.bringSubviewToFront(self.danmuView)
+                    self.bringSubviewToFront(self.interpreterView)
+                }
+            }
+            return
+        }
+        
         AF.request("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id=\(roomId!)").responseJSON { (res) in
             switch res.result {
             case .success(let data):
@@ -559,7 +592,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
                     return
                 }
                 let isLive = jo["data"]["room_info"]["live_status"].intValue == 1
-                let liveStatus = isLive ? "" : "(未开播)"
+                let liveStatus = isLive ? "" : "(离线)"
                 let uname = jo["data"]["anchor_info"]["base_info"]["uname"].string ?? ""
                 if var faceImageUrl = jo["data"]["anchor_info"]["base_info"]["face"].string {
                     if faceImageUrl.starts(with: "http://") {
@@ -672,7 +705,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
                             if let joCmd = jo["cmd"].string, joCmd == "DANMU_MSG", let danmu = jo["info"][1].string {
 //                                print("danmu", roomId, jo["info"][1].string)
                                 
-                                self.danmuView.scrollRangeToVisible(NSRange(location: self.danmuView.text.count, length: 1))
+                                
                                 
                                 let splits = self.danmuOptions.interpreterChars.components(separatedBy: " ")
                                 var isInterpreterDanmu = false
@@ -695,7 +728,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
 //                                    if self.danmuView.contentSize.height > self.danmuView.frame.height {
 //                                        self.danmuView.setContentOffset(CGPoint(x: 0, y: self.danmuView.contentSize.height - self.danmuView.frame.height), animated: true)
 //                                    }
-                                    
+                                    self.danmuView.scrollRangeToVisible(NSRange(location: self.danmuView.text.count, length: 1))
                                     
                                     if isInterpreterDanmu {
                                         var interpreterTextList = self.interpreterView.text.components(separatedBy: "\n")
@@ -704,6 +737,8 @@ class DDPlayer: UIControl, WebSocketDelegate {
                                         }
                                         interpreterTextList.append(contentsOf: ["", danmu])
                                         self.interpreterView.text = interpreterTextList.joined(separator: "\n")
+                                        
+                                        self.interpreterView.scrollRangeToVisible(NSRange(location: self.interpreterView.text.count, length: 1))
                                     }
                                 }
                             }

@@ -75,12 +75,12 @@ class ViewController: UIViewController {
         hdBtn.addTarget(self, action: #selector(hdBtnClick), for: .touchUpInside)
         
         
-        let aboutBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-        aboutBtn.setTitle("\u{e69d}", for: .normal)
-        aboutBtn.setTitleColor(.white, for: .normal)
-        aboutBtn.titleLabel?.font = UIFont(name: "iconfont", size: 20)
-        rightToolbar.addSubview(aboutBtn)
-        aboutBtn.addTarget(self, action: #selector(aboutBtnClick), for: .touchUpInside)
+//        let aboutBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+//        aboutBtn.setTitle("\u{e69d}", for: .normal)
+//        aboutBtn.setTitleColor(.white, for: .normal)
+//        aboutBtn.titleLabel?.font = UIFont(name: "iconfont", size: 20)
+//        rightToolbar.addSubview(aboutBtn)
+//        aboutBtn.addTarget(self, action: #selector(aboutBtnClick), for: .touchUpInside)
         
         sleepBtn = UIButton(frame: CGRect(x: 40, y: 0, width: 60, height: 40))
         sleepBtn.setTitle("\u{e645}", for: .normal)
@@ -110,7 +110,7 @@ class ViewController: UIViewController {
         layoutBtn.addTarget(self, action: #selector(layoutBtnClick), for: .touchUpInside)
         
         let uplistBtn = UIButton(frame: CGRect(x: 40 + landscapeBtn + 4, y: 4, width: 32, height: 32))
-        uplistBtn.setTitle("UP", for: .normal)
+        uplistBtn.setTitle("DD", for: .normal)
         uplistBtn.setTitleColor(AppBgColor, for: .normal)
         uplistBtn.backgroundColor = .white
         uplistBtn.layer.cornerRadius = 16
@@ -134,12 +134,12 @@ class ViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if let showAlert = UserDefaults.standard.object(forKey: "showAlert") as? Bool, showAlert {
-            
-        }else{
-            UserDefaults.standard.setValue(true, forKey: "showAlert")
-            aboutBtnClick()
-        }
+//        if let showAlert = UserDefaults.standard.object(forKey: "showAlert") as? Bool, showAlert {
+//            
+//        }else{
+//            UserDefaults.standard.setValue(true, forKey: "showAlert")
+//            aboutBtnClick()
+//        }
     }
     
     @objc func orientationChanged() {

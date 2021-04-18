@@ -49,9 +49,9 @@ class DanmuOptionsViewController: UITableViewController {
         mainVC = (UIApplication.shared.delegate as! AppDelegate).mainVC
         
         if id != nil && id! >= 0 && id! < 9 {
-            title = "窗口#\(id!+1)弹幕设置"
+            title = "窗口#\(id!+1)日志设置"
         }else{
-            title = "全局弹幕设置"
+            title = "全局日志设置"
         }
         
         
@@ -182,11 +182,11 @@ class DanmuOptionsViewController: UITableViewController {
 
         switch indexPath.row {
         case 0:
-            cell.textLabel?.text = "弹幕开关"
+            cell.textLabel?.text = "开关"
             cell.contentView.addSubview(danmuSwitch)
             break
         case 1:
-            cell.textLabel?.text = "弹幕位置"
+            cell.textLabel?.text = "视窗位置"
             cell.contentView.addSubview(danmuPosition)
             break
         case 2:
@@ -195,12 +195,12 @@ class DanmuOptionsViewController: UITableViewController {
             cell.contentView.addSubview(danmuFontSizeStepper)
             break
         case 3:
-            cell.textLabel?.text = "弹幕宽度"
+            cell.textLabel?.text = "视窗宽度"
             cell.contentView.addSubview(danmuWidthLabel)
             cell.contentView.addSubview(danmuWidthStepper)
             break
         case 4:
-            cell.textLabel?.text = "弹幕高度"
+            cell.textLabel?.text = "视窗高度"
             cell.contentView.addSubview(danmuHeightLabel)
             cell.contentView.addSubview(danmuHeightStepper)
             break

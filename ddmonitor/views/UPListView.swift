@@ -20,7 +20,7 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
     
     var isShow = false
     
-    var uplist: [String] = ["47377","8792912","21652717","47867"]
+    var uplist: [String] = []//["47377","8792912","21652717","47867"]
     
     var upInfos: [String:UPInfo] = [:]
     
@@ -34,9 +34,10 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
         
         if let ul = UserDefaults.standard.array(forKey: "uplist") as? [String] {
             uplist = ul
-        }else{
-            UserDefaults.standard.setValue(uplist, forKey: "uplist")
         }
+//        else{
+//            UserDefaults.standard.setValue(uplist, forKey: "uplist")
+//        }
         
         alpha = 0
         
@@ -55,7 +56,7 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
         let titleView = UILabel(frame: CGRect(x: 16, y: 12, width: 0, height: 28))
         titleView.font = .boldSystemFont(ofSize: 20)
         titleView.textColor = .white
-        titleView.text = "UP列表"
+        titleView.text = "列表"
         titleView.sizeToFit()
         titleBar.addSubview(titleView)
         
@@ -90,12 +91,14 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
     
     func loadUpList() {
-        
-        tableView.reloadData()
-        
-        for roomId in uplist {
-            loadInfo(roomId: roomId, finished: nil)
+        if let ul = UserDefaults.standard.array(forKey: "uplist") as? [String] {
+            uplist = ul
+            tableView.reloadData()
         }
+//        for roomId in uplist {
+//            loadInfo(roomId: roomId, finished: nil)
+//        }
+        loadManyUpInfo()
     }
     
     func sortUpList() {
@@ -108,6 +111,30 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
     
     func loadInfo(roomId: String, finished: ((String?) -> Void)? ) {
+        if !_2333 {
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { (timer) in
+                let upinfo = UPInfo()
+                
+                upinfo.title = "CAM\(roomId)"
+                upinfo.isLive = false
+                upinfo.uname = "DDCAM"
+                
+                if roomId == "1213262" {
+                    upinfo.uname = "DDCAMTest"
+                    upinfo.isLive = true
+                }
+                if roomId == "1000101" {
+                    upinfo.uname = "CAMLOCAL"
+                }
+                
+                self.upInfos[roomId] = upinfo
+                self.tableView.reloadData()
+                
+                finished?(roomId)
+            }
+            return
+        }
+        
         AF.request("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id=\(roomId)").responseJSON { (res) in
             switch res.result {
             case .success(let data):
@@ -223,8 +250,166 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    func loadManyUpInfo() {
+        if !_2333 {
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { (timer) in
+                for roomId in self.uplist {
+                    let upinfo = UPInfo()
+                    
+                    upinfo.title = "CAM\(roomId)"
+                    upinfo.isLive = false
+                    upinfo.uname = "DDCAM"
+                    
+                    if roomId == "1213262" {
+                        upinfo.uname = "DDCAMTest"
+                        upinfo.isLive = true
+                    }
+                    if roomId == "1000101" {
+                        upinfo.uname = "CAMLOCAL"
+                    }
+                    
+                    self.upInfos[roomId] = upinfo
+                }
+                self.tableView.reloadData()
+                
+            }
+            return
+        }
+        
+        let ids = uplist.map({ (s) -> Int in
+            return Int(s) ?? 0
+        })
+        print("ids", ids)
+        
+        AF.request("https://api.live.bilibili.com/room/v2/Room/get_by_ids",
+                   method: .post,
+                   parameters: [
+                    "ids": ids
+                   ],
+                   encoder: JSONParameterEncoder.default).responseJSON { (res) in
+            switch res.result {
+            case .success(let data):
+                let jo = JSON(data)
+                if let uidData = jo["data"].dictionary {
+                    let uids = uidData.values.map { (s) -> Int in
+                        return s["uid"].intValue
+                    }
+                    print("uids", uids)
+                    AF.request("https://api.live.bilibili.com/room/v1/Room/get_status_info_by_uids",
+                               method: .post,
+                               parameters: [
+                                "uids": uids
+                               ],
+                               encoder: JSONParameterEncoder.default
+                    ).responseJSON { (res1) in
+                        switch res1.result {
+                        case .success(let data1):
+                            let jo1 = JSON(data1)
+                            for (k,v) in jo1["data"] {
+                                print(k)
+                                if let realRoomId = v["room_id"].int {
+                                    let roomId = String(realRoomId)
+                                    let upinfo = UPInfo()
+                                    
+                                    upinfo.title = v["title"].string
+                                    upinfo.coverImageUrl = v["keyframe"].string
+                                    upinfo.isLive = v["live_status"].intValue == 1
+                                    upinfo.uname = v["uname"].string
+                                    upinfo.faceImageUrl = v["face"].string
+                                    
+                                    self.upInfos[roomId] = upinfo
+                                    
+                                    if let cachePath = self.cachePath {
+                                        if let face = UIImage(contentsOfFile: "\(cachePath)/face\(roomId).png") {
+                                            self.upInfos[roomId]?.coverImage = face
+                                            DispatchQueue.main.async {
+                                                self.tableView.reloadData()
+                                            }
+                                        }
+                                        if let cover = UIImage(contentsOfFile: "\(cachePath)/cover\(roomId).png") {
+                                            self.upInfos[roomId]?.coverImage = cover
+                                            DispatchQueue.main.async {
+                                                self.tableView.reloadData()
+                                            }
+                                        }
+                                    }
+                                    
+                                    if var coverimg = upinfo.coverImageUrl {
+                                        if let cachePath = self.cachePath {
+                                            self.upInfos[roomId]?.coverImage = UIImage(contentsOfFile: "\(cachePath)/cover\(roomId).png")
+                                            DispatchQueue.main.async {
+                                                self.tableView.reloadData()
+                                            }
+                                        }
+                                        if coverimg.starts(with: "http://") {
+                                            coverimg = coverimg.replacingOccurrences(of: "http://", with: "https://")
+                                        }
+                                        AF.request(coverimg).responseData { (res) in
+                                            if case .success(let data) = res.result {
+                                                if let img = UIImage(data: data) {
+                                                    self.upInfos[roomId]?.coverImage = img
+                                                    DispatchQueue.main.async {
+                                                        self.tableView.reloadData()
+                                                    }
+                                                    if let cachePath = self.cachePath {
+                                                        _ = try? data.write(to: URL(fileURLWithPath: "\(cachePath)/cover\(roomId).png"))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if var faceimg = upinfo.faceImageUrl {
+                                        if let cachePath = self.cachePath {
+                                            self.upInfos[roomId]?.faceImage = UIImage(contentsOfFile: "\(cachePath)/face\(roomId).png")
+                                            DispatchQueue.main.async {
+                                                self.tableView.reloadData()
+                                            }
+                                        }
+                                        if faceimg.starts(with: "http://") {
+                                            faceimg = faceimg.replacingOccurrences(of: "http://", with: "https://")
+                                        }
+                                        AF.request(faceimg).responseData { (res) in
+                                            if case .success(let data) = res.result {
+                                                if let img = UIImage(data: data) {
+                                                    self.upInfos[roomId]?.faceImage = img
+                                                    DispatchQueue.main.async {
+                                                        self.tableView.reloadData()
+                                                    }
+                                                }
+                                                if let cachePath = self.cachePath {
+                                                    _ = try? data.write(to: URL(fileURLWithPath: "\(cachePath)/face\(roomId).png"))
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            self.sortUpList()
+                            
+                            DispatchQueue.main.async {
+                                self.tableView.reloadData()
+                            }
+                            break
+                        case .failure(_):
+                            break
+                        }
+                    }
+                }
+                
+                
+                
+                
+                
+                
+                break
+            case .failure(_):
+                break
+            }
+        }
+    }
+    
     @objc func addBtnClick() {
-        let alert = UIAlertController(title: "输入UP主直播间房间号", message: "如直播间地址：https://live.bilibili.com/1017，则直播间id为1017", preferredStyle: .alert)
+        let alert = UIAlertController(title: "输入key", message: nil, preferredStyle: .alert)
         alert.addTextField { (tf) in
             tf.keyboardType = .numberPad
         }
@@ -232,6 +417,8 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
             if let roomIdInt = Int(alert.textFields?.first?.text ?? "") {
                 let roomId = String(roomIdInt)
                 if !self.uplist.contains(roomId) {
+                    
+                    
                     self.loadInfo(roomId: roomId) { realRoomId in
                         DispatchQueue.main.async {
                             if let real = realRoomId {
@@ -241,7 +428,7 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
                                     UserDefaults.standard.setValue(self.uplist, forKey: "uplist")
                                 }
                             }else{
-                                let erralert = UIAlertController(title: "查询直播间失败", message: nil, preferredStyle: .alert)
+                                let erralert = UIAlertController(title: "查询设备失败", message: nil, preferredStyle: .alert)
                                 erralert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
                                 (UIApplication.shared.delegate as! AppDelegate).mainVC.present(erralert, animated: true, completion: nil)
                             }
@@ -249,7 +436,7 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
                     }
                 }
             }else{
-                let erralert = UIAlertController(title: "无效的直播间id", message: nil, preferredStyle: .alert)
+                let erralert = UIAlertController(title: "无效的key", message: nil, preferredStyle: .alert)
                 erralert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
                 (UIApplication.shared.delegate as! AppDelegate).mainVC.present(erralert, animated: true, completion: nil)
             }
@@ -357,7 +544,7 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
                 cell.cardView.isLiveCover.alpha = 0
             }else{
                 cell.cardView.isLiveCover.alpha = 1
-                cell.cardView.isLiveCover.text = "未开播"
+                cell.cardView.isLiveCover.text = "离线"
             }
         }else{
             cell.cardView.faceImage.image = nil
@@ -374,20 +561,23 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let roomid = self.uplist[indexPath.row]
-        let alert = UIAlertController(title: "选项", message: "关闭此菜单后，长按卡片可拖动到直播窗口内", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "选项", message: "关闭此菜单后，长按卡片可拖动到窗口内", preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "复制id \(roomid)", style: .default, handler: { (act) in
             UIPasteboard.general.string = roomid
         }))
-        alert.addAction(UIAlertAction(title: "跳转直播间", style: .default, handler: { (act) in
-            let roomid = self.uplist[indexPath.row]
-            let openurl = URL(string: "bilibili://live/\(roomid)")!
-            let weburl = URL(string: "https://live.bilibili.com/\(roomid)")!
-            if UIApplication.shared.canOpenURL(openurl) {
-                UIApplication.shared.open(openurl, options: [:], completionHandler: nil)
-            }else{
-                UIApplication.shared.open(weburl, options: [:], completionHandler: nil)
-            }
-        }))
+        if _2333 {
+            alert.addAction(UIAlertAction(title: "跳转", style: .default, handler: { (act) in
+                let roomid = self.uplist[indexPath.row]
+                let openurl = URL(string: "bilibili://live/\(roomid)")!
+                let weburl = URL(string: "https://live.bilibili.com/\(roomid)")!
+                if UIApplication.shared.canOpenURL(openurl) {
+                    UIApplication.shared.open(openurl, options: [:], completionHandler: nil)
+                }else{
+                    UIApplication.shared.open(weburl, options: [:], completionHandler: nil)
+                }
+            }))
+        }
+        
         alert.addAction(UIAlertAction(title: "删除", style: .destructive, handler: { (act) in
             self.uplist.remove(at: indexPath.row)
             self.tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .automatic)

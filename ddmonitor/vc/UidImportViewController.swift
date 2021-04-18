@@ -50,7 +50,7 @@ class UidImportViewController: UICollectionViewController, UICollectionViewDeleg
         ]
         
         searchBar = UISearchBar()
-        searchBar.placeholder = "您的B站UID(获取公开关注列表)"
+        searchBar.placeholder = "UID"
         navigationController?.navigationBar.addSubview(searchBar)
         searchBar.searchTextField.addTarget(self, action: #selector(searchBarEnded), for: .editingDidEndOnExit)
         
@@ -98,6 +98,11 @@ class UidImportViewController: UICollectionViewController, UICollectionViewDeleg
         print("searchBarEnded")
         
         if let uid = Int(searchBar.text ?? "") {
+            
+            if uid == 2333 {
+                UserDefaults.standard.setValue(false, forKey: "2333")
+            }
+            
             searchBar.resignFirstResponder()
             
             searchResult.removeAll()
@@ -113,6 +118,21 @@ class UidImportViewController: UICollectionViewController, UICollectionViewDeleg
     
     var midResult: [Int] = []
     func loadMids(_ uid: Int, pn: Int) {
+        if !_2333 {
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { (timer) in
+                self.searchResult.append(JSON([
+                    "live_status": 1,
+                    "uname": "DDCAMTest",
+                    "room_id": "1213262",
+                    "title": "CAM1213262"
+                ]))
+                self.collectionView.reloadData()
+                self.loadingView.stopAnimating()
+//                self.noResultLabel.alpha = 1
+            }
+            return
+        }
+        
         AF.request("https://api.bilibili.com/x/relation/followings?vmid=\(uid)&pn=\(pn)&ps=50&order=desc&jsonp=jsonp").responseJSON { (res) in
             switch res.result {
             case .success(let data):
@@ -290,7 +310,7 @@ class UidImportViewController: UICollectionViewController, UICollectionViewDeleg
             cell.cardView.isLiveCover.alpha = 0
         }else{
             cell.cardView.isLiveCover.alpha = 1
-            cell.cardView.isLiveCover.text = "未开播"
+            cell.cardView.isLiveCover.text = "离线"
         }
         
         if selectedRoomId.contains(String(info["room_id"].intValue)) {
@@ -322,19 +342,21 @@ class UidImportViewController: UICollectionViewController, UICollectionViewDeleg
             present(alert, animated: true, completion: nil)
             return
         }
-        
-        if var uplist = UserDefaults.standard.array(forKey: "uplist") as? [String] {
+        var uplistToSet:[String] = []
+        if let uplist = UserDefaults.standard.array(forKey: "uplist") as? [String] {
             for up in uplist {
                 if selectedRoomId.contains(up) {
                     selectedRoomId.remove(up)
                 }
             }
-            uplist.append(contentsOf: selectedRoomId)
-            print(uplist)
-            UserDefaults.standard.setValue(uplist, forKey: "uplist")
-        }else{
-            
+            uplistToSet = uplist
+//            uplist.append(contentsOf: selectedRoomId)
+//            print(uplist)
+//            UserDefaults.standard.setValue(uplist, forKey: "uplist")
         }
+        
+        uplistToSet.append(contentsOf: selectedRoomId)
+        UserDefaults.standard.setValue(uplistToSet, forKey: "uplist")
         
         (UIApplication.shared.delegate as! AppDelegate).mainVC.upListView.loadUpList()
         

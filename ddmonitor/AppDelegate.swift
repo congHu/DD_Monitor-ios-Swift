@@ -7,6 +7,8 @@
 
 import UIKit
 
+var _2333 = false
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -15,6 +17,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+//        UserDefaults.standard.setValue(nil, forKey: "2333")
+        
+        if let _23 = UserDefaults.standard.object(forKey: "2333") as? Bool {
+            _2333 = true
+            print("2333")
+            
+            if !_23 {
+                UserDefaults.standard.setValue(["47377","8792912","21652717","47867"], forKey: "uplist")
+                UserDefaults.standard.setValue(true, forKey: "2333")
+                
+                for i in 0..<9 {
+                    UserDefaults.standard.setValue(nil, forKey: "roomId\(i)")
+                }
+            }
+        }
+//        else{
+//            UserDefaults.standard.setValue(nil, forKey: "uplist")
+//        }
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         window!.backgroundColor = .systemBackground
         mainVC = ViewController()

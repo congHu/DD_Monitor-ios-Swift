@@ -1,4 +1,4 @@
-#  DD_Monitor-Universal-Swift
+#  DD_Monitor-ios-Swift
 
 ## 版本特性
 - 纯原生Swift编写，支持iOS14，iPadOS14，macOS11（M1平台与Intel平台）。
@@ -34,6 +34,7 @@
 - [https://github.com/tidwall/DeflateSwift](https://github.com/tidwall/DeflateSwift)
 
 ## 相关链接
+- 安卓版：[https://github.com/congHu/DD_Monitor-android-kotlin](https://github.com/congHu/DD_Monitor-android-kotlin)
 - [https://github.com/zhimingshenjun/DD_Monitor](https://github.com/zhimingshenjun/DD_Monitor)
 - [https://github.com/lovelyyoshino/Bilibili-Live-API](https://github.com/lovelyyoshino/Bilibili-Live-API)
 - [https://github.com/congHu/ddmonitor-uniapp](https://github.com/congHu/ddmonitor-uniapp)

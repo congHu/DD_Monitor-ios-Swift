@@ -34,6 +34,7 @@
 		ACF27BA52601FB2A003878BD /* DDLayoutData.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF27BA42601FB2A003878BD /* DDLayoutData.swift */; };
 		ACF27BAD260243EE003878BD /* DDPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF27BAC260243EE003878BD /* DDPlayer.swift */; };
 		ACF27BB326025757003878BD /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = ACF27BB226025757003878BD /* Alamofire */; };
+		ACFCA0A3260ADAFE0010CA4C /* 1.mov in Resources */ = {isa = PBXBuildFile; fileRef = ACFCA0A2260ADAFE0010CA4C /* 1.mov */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +87,7 @@
 		ACF27B9F2600EC8A003878BD /* DDLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DDLayout.swift; sourceTree = "<group>"; };
 		ACF27BA42601FB2A003878BD /* DDLayoutData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DDLayoutData.swift; sourceTree = "<group>"; };
 		ACF27BAC260243EE003878BD /* DDPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DDPlayer.swift; sourceTree = "<group>"; };
+		ACFCA0A2260ADAFE0010CA4C /* 1.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = 1.mov; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +198,7 @@
 				ACF27B592600B39C003878BD /* Assets.xcassets */,
 				ACF27B5B2600B39C003878BD /* LaunchScreen.storyboard */,
 				ACF27B5E2600B39C003878BD /* Info.plist */,
+				ACFCA0A2260ADAFE0010CA4C /* 1.mov */,
 			);
 			path = ddmonitor;
 			sourceTree = "<group>";
@@ -331,6 +334,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACFCA0A3260ADAFE0010CA4C /* 1.mov in Resources */,
 				ACF27B5D2600B39C003878BD /* LaunchScreen.storyboard in Resources */,
 				ACF27B5A2600B39C003878BD /* Assets.xcassets in Resources */,
 				ACC0A0A626078DA700F918CB /* qrcode.png in Resources */,
@@ -546,6 +550,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ddmonitor/ddmonitor.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7WH3LUALN7;
 				INFOPLIST_FILE = ddmonitor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
@@ -553,8 +558,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hyc.ddmonitor;
+				MARKETING_VERSION = 1.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyc.d2monitor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
@@ -569,6 +574,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ddmonitor/ddmonitor.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 7WH3LUALN7;
 				INFOPLIST_FILE = ddmonitor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
@@ -576,8 +582,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hyc.ddmonitor;
+				MARKETING_VERSION = 1.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hyc.d2monitor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
