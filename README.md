@@ -37,4 +37,3 @@
 - 安卓版：[https://github.com/congHu/DD_Monitor-android-kotlin](https://github.com/congHu/DD_Monitor-android-kotlin)
 - [https://github.com/zhimingshenjun/DD_Monitor](https://github.com/zhimingshenjun/DD_Monitor)
 - [https://github.com/lovelyyoshino/Bilibili-Live-API](https://github.com/lovelyyoshino/Bilibili-Live-API)
-- [https://github.com/congHu/ddmonitor-uniapp](https://github.com/congHu/ddmonitor-uniapp)
