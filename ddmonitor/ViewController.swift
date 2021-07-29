@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Alamofire
 
 var AppBgColor = UIColor(red: 49.0/255.0, green: 54.0/255.0, blue: 59.0/255.0, alpha: 1) //31363b
 //var AppHlColor = UIColor(red: 49.0/255.0, green: 54.0/255.0, blue: 59.0/255.0, alpha: 1) //31363b
@@ -27,7 +28,8 @@ class ViewController: UIViewController {
     
     var globalVolume: Float = 1
 
-    var cancelDragView: UILabel!
+    var cancelDragView: UIView!
+    var cancelDragLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,13 +46,16 @@ class ViewController: UIViewController {
         toolbar = UIView()
         navbar.addSubview(toolbar)
 
-        cancelDragView = UILabel()
+        cancelDragView = UIView()
         cancelDragView.backgroundColor = .systemBlue
-        cancelDragView.textColor = .white
-        cancelDragView.text = "取消拖动"
-        cancelDragView.textAlignment = .center
         cancelDragView.alpha = 0
-        navbar.addSubview(cancelDragView)
+        view.addSubview(cancelDragView)
+        
+        cancelDragLabel = UILabel()
+        cancelDragLabel.textColor = .white
+        cancelDragLabel.text = "取消拖动"
+        cancelDragLabel.textAlignment = .center
+        cancelDragView.addSubview(cancelDragLabel)
         
         rightToolbar = UIView()
         toolbar.addSubview(rightToolbar)
@@ -173,7 +178,8 @@ class ViewController: UIViewController {
         
         toolbar.frame = CGRect(x: view.safeAreaInsets.left, y: 0, width: view.bounds.width - view.safeAreaInsets.left - view.safeAreaInsets.right, height: navbar.frame.height)
 
-        cancelDragView.frame = CGRect(x: view.safeAreaInsets.left, y: 0, width: view.bounds.width - view.safeAreaInsets.left - view.safeAreaInsets.right, height: navbar.frame.height)
+        cancelDragView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.safeAreaInsets.top+40)
+        cancelDragLabel.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.bounds.width, height: 40)
         
         var rightBtns:CGFloat = 180
         #if !targetEnvironment(macCatalyst)
@@ -335,6 +341,55 @@ class ViewController: UIViewController {
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return lockLandscape ? .landscape : .all
+    }
+    
+    func addFromClip(_ clip: String, url: URL) {
+        let alert = UIAlertController(title: "尝试解析剪贴板的分享链接？", message: clip, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "是", style: .default, handler: { act in
+            AF.request(url, headers: [.accept("*/*"),.userAgent("PythonRequests")]).responseString { res in
+                switch res.result {
+                case .success(let data):
+                    print("b23.tv", data)
+                    if let regex = try? NSRegularExpression(pattern: "\"room_id\":(\\d+)", options: []) {
+                        let res = regex.matches(in: data, options: [], range: NSMakeRange(0, data.count))
+                        if res.count > 0 {
+                            let roomId = (data as NSString).substring(with: res[0].range(at: 1))
+                            if !self.upListView.uplist.contains(roomId) {
+                                self.upListView.loadInfo(roomId: roomId) { realRoomId in
+                                    if let real = realRoomId {
+                                        if !self.upListView.uplist.contains(roomId) {
+                                            DispatchQueue.main.async {
+                                                self.upListView.showAnimate()
+                                                self.upListView.uplist.insert(real, at: 0)
+                                                self.upListView.tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .automatic)
+                                                UserDefaults.standard.setValue(self.upListView.uplist, forKey: "uplist")
+                                            }
+                                        }else{
+                                            DispatchQueue.main.async {
+                                                self.upListView.showAnimate()
+                                            }
+                                        }
+                                    }
+                                }
+                            }else{
+                                DispatchQueue.main.async {
+                                    self.upListView.showAnimate()
+                                }
+                            }
+                        }
+                    }
+                case .failure(_):
+                    DispatchQueue.main.async {
+                        let erralert = UIAlertController(title: "尝试解析失败", message: nil, preferredStyle: .alert)
+                        erralert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                        self.present(erralert, animated: true, completion: nil)
+                    }
+                    break
+                }
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "否", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
     
 //    var panView: UIView?

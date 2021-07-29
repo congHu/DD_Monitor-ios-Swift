@@ -33,6 +33,9 @@ class LayoutViewController: UICollectionViewController, UICollectionViewDelegate
         ["c":[["w":2],[:],[:]]],
         ["c":[[:],["w":2],[:]]],
         ["c":[[:],[:],["w":2]]],
+        
+//        ["o":1,"c":[["w":2,"c":2],["c":3],["c":3]]],
+        
     ]
     
     var images: [UIImageView] = []

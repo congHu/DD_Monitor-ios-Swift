@@ -32,6 +32,7 @@ class UPListCell: UITableViewCell {
     
     var panView: UIImageView?
     var mainVC: ViewController?
+    var inPlayer: DDPlayer?
     @objc func doLongPress(_ ges: UILongPressGestureRecognizer) {
         
         if ges.state == .began {
@@ -45,8 +46,13 @@ class UPListCell: UITableViewCell {
             panView?.clipsToBounds = true
             
             mainVC = (UIApplication.shared.delegate as! AppDelegate).mainVC
+            
             mainVC?.view.addSubview(panView!)
+            
             mainVC?.cancelDragView.alpha = 1
+            mainVC?.cancelDragView.backgroundColor = .systemBlue
+            
+            mainVC?.upListView.hideAnimate()
 
             panView?.center = ges.location(in: mainVC?.view)
         }
@@ -61,11 +67,19 @@ class UPListCell: UITableViewCell {
                 //     m.upListView.showAnimate()
                 // }
 
-                // convert(p.frame, from: p)
-                if mainVC?.cancelDragView.frame.contains(p) {
-                    mainVC?.cancelDragView.backgroundColor = .cyan
+                if let p = m.ddLayout.getPlayer(at: p.center) {
+                    if p != inPlayer {
+                        inPlayer = p
+                        p.showControlBar()
+                    }
                 }else{
-                    mainVC?.cancelDragView.backgroundColor = .systemBlue
+                    inPlayer = nil
+                }
+                
+                if m.cancelDragView.frame.contains(p.center) {
+                    m.cancelDragView.backgroundColor = .systemTeal
+                }else{
+                    m.cancelDragView.backgroundColor = .systemBlue
                 }
             }
         }

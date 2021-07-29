@@ -233,16 +233,20 @@ class DDPlayer: UIControl, WebSocketDelegate {
     var controlBarTimer: Timer?
     @objc func playerTap() {
         if controlBar.alpha == 0 {
-            controlBarTimer?.invalidate()
-            controlBar.alpha = 1
-            volumeBar.alpha = 0
-            bringSubviewToFront(controlBar)
-            controlBarTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (timer) in
-                self.controlBar.alpha = 0
-            }
+            showControlBar()
         }else{
             controlBar.alpha = 0
             volumeBar.alpha = 0
+        }
+    }
+    
+    func showControlBar() {
+        controlBarTimer?.invalidate()
+        controlBar.alpha = 1
+        volumeBar.alpha = 0
+        bringSubviewToFront(controlBar)
+        controlBarTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (timer) in
+            self.controlBar.alpha = 0
         }
     }
     
@@ -374,7 +378,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
                 UIPasteboard.general.string = roomid
             }))
             if _2333 {
-                alert.addAction(UIAlertAction(title: "跳转", style: .default, handler: { (act) in
+                alert.addAction(UIAlertAction(title: "跳转直播间", style: .default, handler: { (act) in
                     let openurl = URL(string: "bilibili://live/\(roomid)")!
                     let weburl = URL(string: "https://live.bilibili.com/\(roomid)")!
                     if UIApplication.shared.canOpenURL(openurl) {
