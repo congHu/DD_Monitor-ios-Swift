@@ -409,40 +409,53 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
     }
     
     @objc func addBtnClick() {
-        let alert = UIAlertController(title: "输入key", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: _2333 ? "输入直播间id" : "输入key", message: nil, preferredStyle: .alert)
         alert.addTextField { (tf) in
             tf.keyboardType = .numberPad
         }
-        alert.addAction(UIAlertAction(title: "确定", style: .default, handler: { (act) in
-            if let roomIdInt = Int(alert.textFields?.first?.text ?? "") {
-                let roomId = String(roomIdInt)
-                if !self.uplist.contains(roomId) {
-                    
-                    
-                    self.loadInfo(roomId: roomId) { realRoomId in
-                        DispatchQueue.main.async {
-                            if let real = realRoomId {
-                                if !self.uplist.contains(real) {
-                                    self.uplist.insert(real, at: 0)
-                                    self.tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .automatic)
-                                    UserDefaults.standard.setValue(self.uplist, forKey: "uplist")
-                                }
-                            }else{
-                                let erralert = UIAlertController(title: "查询设备失败", message: nil, preferredStyle: .alert)
-                                erralert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-                                (UIApplication.shared.delegate as! AppDelegate).mainVC.present(erralert, animated: true, completion: nil)
-                            }
-                        }
-                    }
-                }
-            }else{
-                let erralert = UIAlertController(title: "无效的key", message: nil, preferredStyle: .alert)
-                erralert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-                (UIApplication.shared.delegate as! AppDelegate).mainVC.present(erralert, animated: true, completion: nil)
+        alert.addAction(UIAlertAction(title: "完成", style: .default, handler: { (act) in
+            self.addUpCard(alert)
+        }))
+        alert.addAction(UIAlertAction(title: "继续", style: .default, handler: { (act) in
+            self.addUpCard(alert) {
+                // 继续弹出这个alert框
+                (UIApplication.shared.delegate as! AppDelegate).mainVC.present(alert, animated: true, completion: nil)
             }
         }))
         alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         (UIApplication.shared.delegate as! AppDelegate).mainVC.present(alert, animated: true, completion: nil)
+    }
+
+    func addUpCard(_ alert: UIAlertController, finished: (() -> Void)? = nil ) {
+        if let roomIdInt = Int(alert.textFields?.first?.text ?? "") {
+            let roomId = String(roomIdInt)
+            if !self.uplist.contains(roomId) {
+                self.loadInfo(roomId: roomId) { realRoomId in
+                    DispatchQueue.main.async {
+                        if let real = realRoomId {
+                            if !self.uplist.contains(real) {
+                                self.uplist.insert(real, at: 0)
+                                self.tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .automatic)
+                                UserDefaults.standard.setValue(self.uplist, forKey: "uplist")
+                            }
+                        }else{
+                            let erralert = UIAlertController(title: _2333 ? "查询直播间失败" : "查询设备失败", message: nil, preferredStyle: .alert)
+                            erralert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                            (UIApplication.shared.delegate as! AppDelegate).mainVC.present(erralert, animated: true, completion: nil) // completion然后finished?()
+                        }
+                        finished?()
+                    }
+                }
+            }else{
+                finished?()
+            }
+        }else{
+            let erralert = UIAlertController(title: _2333 ? "无效的直播间id" : "无效的key", message: nil, preferredStyle: .alert)
+            erralert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            (UIApplication.shared.delegate as! AppDelegate).mainVC.present(erralert, animated: true, completion: nil) // completion然后finished?() action的handler?
+            finished?()
+        }
+        
     }
     
     @objc func importBtnClick() {

@@ -51,6 +51,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         for p in mainVC.ddLayout.players {
             p.player?.play()
         }
+
+        // 读取剪贴板
+        if let clip = UIPasteboard.general.string {
+            print(clip)
+        }
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {

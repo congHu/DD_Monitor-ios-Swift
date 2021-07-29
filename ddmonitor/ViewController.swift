@@ -26,6 +26,8 @@ class ViewController: UIViewController {
     var sleepBtn: UIButton!
     
     var globalVolume: Float = 1
+
+    var cancelDragView: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +43,14 @@ class ViewController: UIViewController {
         
         toolbar = UIView()
         navbar.addSubview(toolbar)
+
+        cancelDragView = UILabel()
+        cancelDragView.backgroundColor = .systemBlue
+        cancelDragView.textColor = .white
+        cancelDragView.text = "取消拖动"
+        cancelDragView.textAlignment = .center
+        cancelDragView.alpha = 0
+        navbar.addSubview(cancelDragView)
         
         rightToolbar = UIView()
         toolbar.addSubview(rightToolbar)
@@ -75,12 +85,12 @@ class ViewController: UIViewController {
         hdBtn.addTarget(self, action: #selector(hdBtnClick), for: .touchUpInside)
         
         
-//        let aboutBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-//        aboutBtn.setTitle("\u{e69d}", for: .normal)
-//        aboutBtn.setTitleColor(.white, for: .normal)
-//        aboutBtn.titleLabel?.font = UIFont(name: "iconfont", size: 20)
-//        rightToolbar.addSubview(aboutBtn)
-//        aboutBtn.addTarget(self, action: #selector(aboutBtnClick), for: .touchUpInside)
+       let aboutBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+       aboutBtn.setTitle("\u{e69d}", for: .normal)
+       aboutBtn.setTitleColor(.white, for: .normal)
+       aboutBtn.titleLabel?.font = UIFont(name: "iconfont", size: 20)
+       rightToolbar.addSubview(aboutBtn)
+       aboutBtn.addTarget(self, action: #selector(aboutBtnClick), for: .touchUpInside)
         
         sleepBtn = UIButton(frame: CGRect(x: 40, y: 0, width: 60, height: 40))
         sleepBtn.setTitle("\u{e645}", for: .normal)
@@ -162,6 +172,8 @@ class ViewController: UIViewController {
         mainRight = UIDevice.current.orientation == .landscapeRight ? view.safeAreaInsets.right : 0
         
         toolbar.frame = CGRect(x: view.safeAreaInsets.left, y: 0, width: view.bounds.width - view.safeAreaInsets.left - view.safeAreaInsets.right, height: navbar.frame.height)
+
+        cancelDragView.frame = CGRect(x: view.safeAreaInsets.left, y: 0, width: view.bounds.width - view.safeAreaInsets.left - view.safeAreaInsets.right, height: navbar.frame.height)
         
         var rightBtns:CGFloat = 180
         #if !targetEnvironment(macCatalyst)
@@ -220,10 +232,11 @@ class ViewController: UIViewController {
     }
     
     @objc func aboutBtnClick() {
-        let alret = UIAlertController(title: "DD监控室Swift v1.1.0 by CongHu", message: "· 点击右上角“UP”按钮添加UP主，长按拖动到播放器窗口内。\n· 观看多个直播时请注意带宽网速、流量消耗、电池电量、机身发热、系统卡顿等软硬件环境问题。\n· 本软件开源，遵循LGPL-2.1协议。\n· 本软件仅读取公开API数据，不涉及账号登录，欢迎查看源码进行监督。因此，本软件不支持弹幕互动、直播打赏等功能，若要使用请前往原版B站APP。\n· 直播流、UP主信息、以及个人公开的关注列表数据来自B站公开API，最终解释权归B站所有。", preferredStyle: .alert)
-        alret.addAction(UIAlertAction(title: "开源地址", style: .default, handler: { (act) in
-            UIApplication.shared.open(URL(string: "https://github.com/congHu/DD_Monitor-Universal-Swift")!, options: [:], completionHandler: nil)
-        }))
+        // · 点击右上角“UP”按钮添加UP主，长按拖动到播放器窗口内。\n· 观看多个直播时请注意带宽网速、流量消耗、电池电量、机身发热、系统卡顿等软硬件环境问题。\n· 本软件开源，遵循LGPL-2.1协议。\n· 本软件仅读取公开API数据，不涉及账号登录，欢迎查看源码进行监督。因此，本软件不支持弹幕互动、直播打赏等功能，若要使用请前往原版B站APP。\n· 直播流、UP主信息、以及个人公开的关注列表数据来自B站公开API，最终解释权归B站所有。
+        let alret = UIAlertController(title: "DD监控室Swift", message: "CongHu v1.2.0", preferredStyle: .alert)
+        // alret.addAction(UIAlertAction(title: "开源地址", style: .default, handler: { (act) in
+        //     UIApplication.shared.open(URL(string: "https://github.com/congHu/DD_Monitor-Universal-Swift")!, options: [:], completionHandler: nil)
+        // }))
         alret.addAction(UIAlertAction(title: "关闭", style: .cancel, handler: nil))
         present(alret, animated: true, completion: nil)
     }

@@ -46,17 +46,26 @@ class UPListCell: UITableViewCell {
             
             mainVC = (UIApplication.shared.delegate as! AppDelegate).mainVC
             mainVC?.view.addSubview(panView!)
+            mainVC?.cancelDragView.alpha = 1
+
             panView?.center = ges.location(in: mainVC?.view)
         }
         
         if ges.state == .changed {
             panView?.center = ges.location(in: mainVC?.view)
             if let p = panView, let m = mainVC {
-                if p.center.x < m.view.frame.width - UPTableViewWidth - m.mainRight && m.upListView.alpha == 1 {
-                    m.upListView.hideAnimate()
-                }
-                if p.center.x > m.view.frame.width - UPTableViewWidth/4 - m.mainRight && m.upListView.alpha == 0 {
-                    m.upListView.showAnimate()
+                // if p.center.x < m.view.frame.width - UPTableViewWidth - m.mainRight && m.upListView.alpha == 1 {
+                //     m.upListView.hideAnimate()
+                // }
+                // if p.center.x > m.view.frame.width - UPTableViewWidth/4 - m.mainRight && m.upListView.alpha == 0 {
+                //     m.upListView.showAnimate()
+                // }
+
+                // convert(p.frame, from: p)
+                if mainVC?.cancelDragView.frame.contains(p) {
+                    mainVC?.cancelDragView.backgroundColor = .cyan
+                }else{
+                    mainVC?.cancelDragView.backgroundColor = .systemBlue
                 }
             }
         }
@@ -71,6 +80,8 @@ class UPListCell: UITableViewCell {
                 }
             }
             panView?.removeFromSuperview()
+
+            mainVC?.cancelDragView.alpha = 0
         }
         
     }
