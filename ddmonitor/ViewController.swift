@@ -239,7 +239,7 @@ class ViewController: UIViewController {
     
     @objc func aboutBtnClick() {
         // · 点击右上角“UP”按钮添加UP主，长按拖动到播放器窗口内。\n· 观看多个直播时请注意带宽网速、流量消耗、电池电量、机身发热、系统卡顿等软硬件环境问题。\n· 本软件开源，遵循LGPL-2.1协议。\n· 本软件仅读取公开API数据，不涉及账号登录，欢迎查看源码进行监督。因此，本软件不支持弹幕互动、直播打赏等功能，若要使用请前往原版B站APP。\n· 直播流、UP主信息、以及个人公开的关注列表数据来自B站公开API，最终解释权归B站所有。
-        let alret = UIAlertController(title: "DD监控室Swift", message: "CongHu v1.2.0", preferredStyle: .alert)
+        let alret = UIAlertController(title: "DD监控室Swift", message: "CongHu v1.2.2", preferredStyle: .alert)
         // alret.addAction(UIAlertAction(title: "开源地址", style: .default, handler: { (act) in
         //     UIApplication.shared.open(URL(string: "https://github.com/congHu/DD_Monitor-Universal-Swift")!, options: [:], completionHandler: nil)
         // }))
