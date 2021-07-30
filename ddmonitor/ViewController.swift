@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Alamofire
 
 var AppBgColor = UIColor(red: 49.0/255.0, green: 54.0/255.0, blue: 59.0/255.0, alpha: 1) //31363b
 //var AppHlColor = UIColor(red: 49.0/255.0, green: 54.0/255.0, blue: 59.0/255.0, alpha: 1) //31363b
@@ -26,6 +27,9 @@ class ViewController: UIViewController {
     var sleepBtn: UIButton!
     
     var globalVolume: Float = 1
+
+    var cancelDragView: UIView!
+    var cancelDragLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +45,17 @@ class ViewController: UIViewController {
         
         toolbar = UIView()
         navbar.addSubview(toolbar)
+
+        cancelDragView = UIView()
+        cancelDragView.backgroundColor = .systemBlue
+        cancelDragView.alpha = 0
+        view.addSubview(cancelDragView)
+        
+        cancelDragLabel = UILabel()
+        cancelDragLabel.textColor = .white
+        cancelDragLabel.text = "取消拖动"
+        cancelDragLabel.textAlignment = .center
+        cancelDragView.addSubview(cancelDragLabel)
         
         rightToolbar = UIView()
         toolbar.addSubview(rightToolbar)
@@ -75,12 +90,12 @@ class ViewController: UIViewController {
         hdBtn.addTarget(self, action: #selector(hdBtnClick), for: .touchUpInside)
         
         
-//        let aboutBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-//        aboutBtn.setTitle("\u{e69d}", for: .normal)
-//        aboutBtn.setTitleColor(.white, for: .normal)
-//        aboutBtn.titleLabel?.font = UIFont(name: "iconfont", size: 20)
-//        rightToolbar.addSubview(aboutBtn)
-//        aboutBtn.addTarget(self, action: #selector(aboutBtnClick), for: .touchUpInside)
+       let aboutBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+       aboutBtn.setTitle("\u{e69d}", for: .normal)
+       aboutBtn.setTitleColor(.white, for: .normal)
+       aboutBtn.titleLabel?.font = UIFont(name: "iconfont", size: 20)
+       rightToolbar.addSubview(aboutBtn)
+       aboutBtn.addTarget(self, action: #selector(aboutBtnClick), for: .touchUpInside)
         
         sleepBtn = UIButton(frame: CGRect(x: 40, y: 0, width: 60, height: 40))
         sleepBtn.setTitle("\u{e645}", for: .normal)
@@ -162,6 +177,9 @@ class ViewController: UIViewController {
         mainRight = UIDevice.current.orientation == .landscapeRight ? view.safeAreaInsets.right : 0
         
         toolbar.frame = CGRect(x: view.safeAreaInsets.left, y: 0, width: view.bounds.width - view.safeAreaInsets.left - view.safeAreaInsets.right, height: navbar.frame.height)
+
+        cancelDragView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.safeAreaInsets.top+40)
+        cancelDragLabel.frame = CGRect(x: 0, y: view.safeAreaInsets.top, width: view.bounds.width, height: 40)
         
         var rightBtns:CGFloat = 180
         #if !targetEnvironment(macCatalyst)
@@ -220,10 +238,11 @@ class ViewController: UIViewController {
     }
     
     @objc func aboutBtnClick() {
-        let alret = UIAlertController(title: "DD监控室Swift v1.1.0 by CongHu", message: "· 点击右上角“UP”按钮添加UP主，长按拖动到播放器窗口内。\n· 观看多个直播时请注意带宽网速、流量消耗、电池电量、机身发热、系统卡顿等软硬件环境问题。\n· 本软件开源，遵循LGPL-2.1协议。\n· 本软件仅读取公开API数据，不涉及账号登录，欢迎查看源码进行监督。因此，本软件不支持弹幕互动、直播打赏等功能，若要使用请前往原版B站APP。\n· 直播流、UP主信息、以及个人公开的关注列表数据来自B站公开API，最终解释权归B站所有。", preferredStyle: .alert)
-        alret.addAction(UIAlertAction(title: "开源地址", style: .default, handler: { (act) in
-            UIApplication.shared.open(URL(string: "https://github.com/congHu/DD_Monitor-Universal-Swift")!, options: [:], completionHandler: nil)
-        }))
+        // · 点击右上角“UP”按钮添加UP主，长按拖动到播放器窗口内。\n· 观看多个直播时请注意带宽网速、流量消耗、电池电量、机身发热、系统卡顿等软硬件环境问题。\n· 本软件开源，遵循LGPL-2.1协议。\n· 本软件仅读取公开API数据，不涉及账号登录，欢迎查看源码进行监督。因此，本软件不支持弹幕互动、直播打赏等功能，若要使用请前往原版B站APP。\n· 直播流、UP主信息、以及个人公开的关注列表数据来自B站公开API，最终解释权归B站所有。
+        let alret = UIAlertController(title: "DD监控室Swift", message: "CongHu v1.2.0", preferredStyle: .alert)
+        // alret.addAction(UIAlertAction(title: "开源地址", style: .default, handler: { (act) in
+        //     UIApplication.shared.open(URL(string: "https://github.com/congHu/DD_Monitor-Universal-Swift")!, options: [:], completionHandler: nil)
+        // }))
         alret.addAction(UIAlertAction(title: "关闭", style: .cancel, handler: nil))
         present(alret, animated: true, completion: nil)
     }
@@ -322,6 +341,55 @@ class ViewController: UIViewController {
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return lockLandscape ? .landscape : .all
+    }
+    
+    func addFromClip(_ clip: String, url: URL) {
+        let alert = UIAlertController(title: "尝试解析剪贴板的分享链接？", message: clip, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "是", style: .default, handler: { act in
+            AF.request(url, headers: [.accept("*/*"),.userAgent("PythonRequests")]).responseString { res in
+                switch res.result {
+                case .success(let data):
+                    print("b23.tv", data)
+                    if let regex = try? NSRegularExpression(pattern: "\"room_id\":(\\d+)", options: []) {
+                        let res = regex.matches(in: data, options: [], range: NSMakeRange(0, data.count))
+                        if res.count > 0 {
+                            let roomId = (data as NSString).substring(with: res[0].range(at: 1))
+                            if !self.upListView.uplist.contains(roomId) {
+                                self.upListView.loadInfo(roomId: roomId) { realRoomId in
+                                    if let real = realRoomId {
+                                        if !self.upListView.uplist.contains(roomId) {
+                                            DispatchQueue.main.async {
+                                                self.upListView.showAnimate()
+                                                self.upListView.uplist.insert(real, at: 0)
+                                                self.upListView.tableView.reloadSections(IndexSet(arrayLiteral: 0), with: .automatic)
+                                                UserDefaults.standard.setValue(self.upListView.uplist, forKey: "uplist")
+                                            }
+                                        }else{
+                                            DispatchQueue.main.async {
+                                                self.upListView.showAnimate()
+                                            }
+                                        }
+                                    }
+                                }
+                            }else{
+                                DispatchQueue.main.async {
+                                    self.upListView.showAnimate()
+                                }
+                            }
+                        }
+                    }
+                case .failure(_):
+                    DispatchQueue.main.async {
+                        let erralert = UIAlertController(title: "尝试解析失败", message: nil, preferredStyle: .alert)
+                        erralert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                        self.present(erralert, animated: true, completion: nil)
+                    }
+                    break
+                }
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "否", style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
     
 //    var panView: UIView?

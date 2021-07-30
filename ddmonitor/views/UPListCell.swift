@@ -32,6 +32,7 @@ class UPListCell: UITableViewCell {
     
     var panView: UIImageView?
     var mainVC: ViewController?
+    var inPlayer: DDPlayer?
     @objc func doLongPress(_ ges: UILongPressGestureRecognizer) {
         
         if ges.state == .began {
@@ -45,18 +46,40 @@ class UPListCell: UITableViewCell {
             panView?.clipsToBounds = true
             
             mainVC = (UIApplication.shared.delegate as! AppDelegate).mainVC
+            
             mainVC?.view.addSubview(panView!)
+            
+            mainVC?.cancelDragView.alpha = 1
+            mainVC?.cancelDragView.backgroundColor = .systemBlue
+            
+            mainVC?.upListView.hideAnimate()
+
             panView?.center = ges.location(in: mainVC?.view)
         }
         
         if ges.state == .changed {
             panView?.center = ges.location(in: mainVC?.view)
             if let p = panView, let m = mainVC {
-                if p.center.x < m.view.frame.width - UPTableViewWidth - m.mainRight && m.upListView.alpha == 1 {
-                    m.upListView.hideAnimate()
+                // if p.center.x < m.view.frame.width - UPTableViewWidth - m.mainRight && m.upListView.alpha == 1 {
+                //     m.upListView.hideAnimate()
+                // }
+                // if p.center.x > m.view.frame.width - UPTableViewWidth/4 - m.mainRight && m.upListView.alpha == 0 {
+                //     m.upListView.showAnimate()
+                // }
+
+                if let p = m.ddLayout.getPlayer(at: p.center) {
+                    if p != inPlayer {
+                        inPlayer = p
+                        p.showControlBar()
+                    }
+                }else{
+                    inPlayer = nil
                 }
-                if p.center.x > m.view.frame.width - UPTableViewWidth/4 - m.mainRight && m.upListView.alpha == 0 {
-                    m.upListView.showAnimate()
+                
+                if m.cancelDragView.frame.contains(p.center) {
+                    m.cancelDragView.backgroundColor = .systemTeal
+                }else{
+                    m.cancelDragView.backgroundColor = .systemBlue
                 }
             }
         }
@@ -71,6 +94,8 @@ class UPListCell: UITableViewCell {
                 }
             }
             panView?.removeFromSuperview()
+
+            mainVC?.cancelDragView.alpha = 0
         }
         
     }

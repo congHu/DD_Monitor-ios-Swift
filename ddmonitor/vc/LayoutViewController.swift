@@ -33,6 +33,18 @@ class LayoutViewController: UICollectionViewController, UICollectionViewDelegate
         ["c":[["w":2],[:],[:]]],
         ["c":[[:],["w":2],[:]]],
         ["c":[[:],[:],["w":2]]],
+        
+        ["o":1,"c":[["w":2,"c":2],["c":3],["c":3]]],
+        
+        ["c":[["o":1,"c":2],["o":1,"c":2],["w":2],["w":2]]],
+        ["c":[["w":2],["o":1,"c":2],["o":1,"c":2],["w":2]]],
+        ["c":[["w":2],["w":2],["o":1,"c":2],["o":1,"c":2]]],
+        
+        ["c":[["w":2],["o":1,"c":2],["o":1,"c":2],["o":1,"c":2],["o":1,"c":2]]],
+        ["c":[["o":1,"c":2],["o":1,"c":2],["w":2],["o":1,"c":2],["o":1,"c":2]]],
+        ["c":[["o":1,"c":2],["o":1,"c":2],["o":1,"c":2],["o":1,"c":2],["w":2]]],
+        
+        ["c":[["o":1,"c":2],["o":1,"c":2],["o":1,"c":2],["o":1,"c":2]]]
     ]
     
     var images: [UIImageView] = []
@@ -46,7 +58,7 @@ class LayoutViewController: UICollectionViewController, UICollectionViewDelegate
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
         
-        for i in 1...19 {
+        for i in 1...layouts.count {
             let img = UIImageView()
             img.image = UIImage(named: "layout\(i)")
             img.contentMode = .scaleAspectFill
