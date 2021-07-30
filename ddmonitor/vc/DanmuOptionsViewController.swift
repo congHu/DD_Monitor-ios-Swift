@@ -49,9 +49,9 @@ class DanmuOptionsViewController: UITableViewController {
         mainVC = (UIApplication.shared.delegate as! AppDelegate).mainVC
         
         if id != nil && id! >= 0 && id! < 9 {
-            title = "窗口#\(id!+1)日志设置"
+            title = _2333 ? "窗口#\(id!+1)弹幕设置" : "窗口#\(id!+1)日志设置"
         }else{
-            title = "全局日志设置"
+            title = _2333 ? "全局弹幕设置" : "全局日志设置"
         }
         
         
