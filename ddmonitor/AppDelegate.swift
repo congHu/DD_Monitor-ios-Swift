@@ -53,21 +53,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // 读取剪贴板
-        if let clip = UIPasteboard.general.string {
-            print("clip",clip)
-            if let regex = try? NSRegularExpression(pattern: "【.*】\\s*(https?://\\S+)", options: []) {
-                let res = regex.matches(in: clip, options: [], range: NSMakeRange(0, clip.count))
-                if res.count > 0 {
-                    let urlstr = (clip as NSString).substring(with: res[0].range(at: 1))
-                    if let url = URL(string: urlstr) {
-                        if ["b23.tv"].contains(url.host ?? "") {
-                            mainVC.addFromClip(clip, url: url)
-                            UIPasteboard.general.string = ""
-                        }
-                    }
-                }
-            }
-        }
+//        if let clip = UIPasteboard.general.string {
+//            print("clip",clip)
+//            if let regex = try? NSRegularExpression(pattern: "【.*】\\s*(https?://\\S+)", options: []) {
+//                let res = regex.matches(in: clip, options: [], range: NSMakeRange(0, clip.count))
+//                if res.count > 0 {
+//                    let urlstr = (clip as NSString).substring(with: res[0].range(at: 1))
+//                    if let url = URL(string: urlstr) {
+//                        if ["b23.tv"].contains(url.host ?? "") {
+//                            mainVC.addFromClip(clip, url: url)
+//                            UIPasteboard.general.string = ""
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {

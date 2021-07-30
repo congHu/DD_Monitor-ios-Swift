@@ -14,6 +14,7 @@ class VolumeViewController: UITableViewController {
     
     var sliders: [UISlider] = []
     var muteBtns: [UIButton] = []
+    var volumeLabels: [UILabel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +42,12 @@ class VolumeViewController: UITableViewController {
             btn.titleLabel?.font = UIFont(name: "iconfont", size: 22)
             btn.addTarget(self, action: #selector(muteBtnClick(_:)), for: .touchUpInside)
             muteBtns.append(btn)
+            
+            let label = UILabel()
+            label.tag = i
+            label.text = "100"
+            label.textAlignment = .center
+            volumeLabels.append(label)
         }
         
         title = "音量调节"
@@ -60,7 +67,10 @@ class VolumeViewController: UITableViewController {
 //        tableView.frame = CGRect(x: view.safeAreaInsets.left, y: 0, width: view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right, height: view.frame.height)
         
         for s in sliders {
-            s.frame = CGRect(x: 144, y: 8, width: tableView.frame.width - 184 - view.safeAreaInsets.right, height: 32)
+            s.frame = CGRect(x: 144, y: 8, width: tableView.frame.width - 244 - view.safeAreaInsets.right, height: 32)
+        }
+        for l in volumeLabels {
+            l.frame = CGRect(x: tableView.frame.width - 70 - view.safeAreaInsets.right, y: 9, width: 30, height: 30)
         }
     }
     
@@ -82,6 +92,7 @@ class VolumeViewController: UITableViewController {
         
         cell.contentView.addSubview(sliders[indexPath.row])
         cell.contentView.addSubview(muteBtns[indexPath.row])
+        cell.contentView.addSubview(volumeLabels[indexPath.row])
         
         if indexPath.row == 0 {
             cell.textLabel?.text = "全局"
@@ -90,6 +101,7 @@ class VolumeViewController: UITableViewController {
             cell.textLabel?.text = "窗口#\(indexPath.row)"
             sliders[indexPath.row].value = mainVC?.ddLayout.players[indexPath.row - 1].volumeSlider.value ?? 1
         }
+        volumeLabels[indexPath.row].text = "\(Int(sliders[indexPath.row].value * 100))"
         
         return cell
     }
@@ -105,7 +117,7 @@ class VolumeViewController: UITableViewController {
                 m.ddLayout.players[slider.tag-1].setVolume(slider.value)
             }
         }
-        
+        volumeLabels[slider.tag].text = "\(Int(slider.value * 100))"
     }
     
     @objc func sliderUp(_ slider: UISlider) {
@@ -127,6 +139,7 @@ class VolumeViewController: UITableViewController {
             }else{
                 sliders[btn.tag].value = m.ddLayout.players[btn.tag-1].toggleMute() ? 0 : 0.5
             }
+            volumeLabels[btn.tag].text = "\(Int(sliders[btn.tag].value * 100))"
         }
     }
 

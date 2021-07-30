@@ -60,25 +60,41 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
         titleView.sizeToFit()
         titleBar.addSubview(titleView)
         
-        let addBtn = UIButton(frame: CGRect(x: titleView.frame.width + 20, y: 8, width: 48, height: 28))
+        let addBtn = UIButton(frame: CGRect(x: titleView.frame.width + 20, y: 8, width: 40, height: 28))
         addBtn.setTitle("添加", for: .normal)
         addBtn.setTitleColor(.white, for: .normal)
-        addBtn.titleLabel?.font = .systemFont(ofSize: 14)
+        addBtn.titleLabel?.font = .systemFont(ofSize: 12)
         addBtn.layer.cornerRadius = 4
         addBtn.layer.borderWidth = 1
         addBtn.layer.borderColor = UIColor.white.cgColor
         titleBar.addSubview(addBtn)
         addBtn.addTarget(self, action: #selector(addBtnClick), for: .touchUpInside)
         
-        let importBtn = UIButton(frame: CGRect(x: titleView.frame.width + 72, y: 8, width: 48, height: 28))
+        let importBtn = UIButton(frame: CGRect(x: titleView.frame.width + 64, y: 8, width: 40, height: 28))
         importBtn.setTitle("导入", for: .normal)
         importBtn.setTitleColor(.white, for: .normal)
-        importBtn.titleLabel?.font = .systemFont(ofSize: 14)
+        importBtn.titleLabel?.font = .systemFont(ofSize: 12)
         importBtn.layer.cornerRadius = 4
         importBtn.layer.borderWidth = 1
         importBtn.layer.borderColor = UIColor.white.cgColor
         titleBar.addSubview(importBtn)
         importBtn.addTarget(self, action: #selector(importBtnClick), for: .touchUpInside)
+        
+        let pasteBtn = UIButton(frame: CGRect(x: titleView.frame.width + 108, y: 8, width: 40, height: 28))
+        pasteBtn.setTitle("粘贴\n分享链接", for: .normal)
+        pasteBtn.setTitleColor(.white, for: .normal)
+        pasteBtn.titleLabel?.font = .systemFont(ofSize: 9)
+        pasteBtn.titleLabel?.lineBreakMode = .byWordWrapping
+        pasteBtn.titleLabel?.textAlignment = .center
+        pasteBtn.layer.cornerRadius = 4
+        pasteBtn.layer.borderWidth = 1
+        pasteBtn.layer.borderColor = UIColor.white.cgColor
+        titleBar.addSubview(pasteBtn)
+        pasteBtn.addTarget(self, action: #selector(pasteBtnClick), for: .touchUpInside)
+        
+        if !_2333 {
+            pasteBtn.alpha = 0
+        }
         
         tableView = UITableView(frame: .zero, style: .plain)
         tableView.backgroundColor = AppBgColor
@@ -468,6 +484,30 @@ class UPListView: UIView, UITableViewDelegate, UITableViewDataSource {
         let vc = UidImportViewController()
         vc.modalPresentationStyle = .formSheet
         (UIApplication.shared.delegate as! AppDelegate).mainVC.present(UINavigationController(rootViewController: vc), animated: true, completion: nil)
+    }
+    
+    @objc func pasteBtnClick() {
+        var success = false
+        if let clip = UIPasteboard.general.string {
+            print("clip",clip)
+            if let regex = try? NSRegularExpression(pattern: "【.*】\\s*(https?://\\S+)", options: []) {
+                let res = regex.matches(in: clip, options: [], range: NSMakeRange(0, clip.count))
+                if res.count > 0 {
+                    let urlstr = (clip as NSString).substring(with: res[0].range(at: 1))
+                    if let url = URL(string: urlstr) {
+                        success = true
+                        if ["b23.tv"].contains(url.host ?? "") {
+                            (UIApplication.shared.delegate as! AppDelegate).mainVC.addFromClip(clip, url: url)
+                        }
+                    }
+                }
+            }
+        }
+        if !success {
+            let err = UIAlertController(title: "剪贴板的格式不正确", message: "请到B站app客户端打开直播间，点击分享，复制链接，然后再回来粘贴分享链接", preferredStyle: .alert)
+            err.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            (UIApplication.shared.delegate as! AppDelegate).mainVC.present(err, animated: true, completion: nil)
+        }
     }
     
     required init?(coder: NSCoder) {

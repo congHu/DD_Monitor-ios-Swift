@@ -36,7 +36,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
     
     var hdBtn: UIButton!
     
-//    var muteBtn: UIButton!
+    var muteBtn: UIButton!
     var volumeSlider: UISlider!
     
     var nameBtn: UIButton!
@@ -46,6 +46,9 @@ class DDPlayer: UIControl, WebSocketDelegate {
     var cachePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first
     
     var socket: WebSocket?
+    
+    var volumePopup: UIAlertController!
+    var volumeLabel: UILabel!
     
     init(id: Int) {
         super.init(frame: .zero)
@@ -122,8 +125,8 @@ class DDPlayer: UIControl, WebSocketDelegate {
         volumeBar.alpha = 0
         addSubview(volumeBar)
         
-        let muteBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
-        muteBtn.setTitleColor(.white, for: .normal)
+        muteBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+        muteBtn.setTitleColor(.label, for: .normal)
         muteBtn.setTitle("\u{e607}", for: .normal)
         muteBtn.titleLabel?.font = UIFont(name: "iconfont", size: 22)
         volumeBar.addSubview(muteBtn)
@@ -137,6 +140,10 @@ class DDPlayer: UIControl, WebSocketDelegate {
         volumeSlider.addTarget(self, action: #selector(volumeSliderUp), for: .touchUpOutside)
         volumeBar.addSubview(volumeSlider)
         
+        volumeLabel = UILabel()
+        volumeLabel.text = "100"
+        volumeLabel.textAlignment = .center
+        
         let longpress = UILongPressGestureRecognizer(target: self, action: #selector(doLongPress(_:)))
         addGestureRecognizer(longpress)
         
@@ -149,6 +156,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
         if let vol = UserDefaults.standard.object(forKey: "volume\(id)") as? Float {
 //            volume = vol
             volumeSlider.value = vol
+            volumeLabel.text = "\(Int(vol * 100))"
         }else{
             UserDefaults.standard.setValue(volumeSlider.value, forKey: "volume\(id)")
         }
@@ -205,7 +213,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
         self.playerLayer?.frame = self.frame
         controlBar.frame = CGRect(x: 0, y: frame.height-30, width: frame.width, height: 30)
         volumeBar.frame = CGRect(x: 30, y: frame.height-60, width: frame.width-30 > 150 ? 150 : frame.width-30, height: 30)
-        volumeSlider.frame = CGRect(x: 30, y: 0, width: volumeBar.frame.width-30, height: 30)
+//        volumeSlider.frame = CGRect(x: 30, y: 0, width: volumeBar.frame.width-30, height: 30)
         nameBtn.frame = CGRect(x: 130, y: 0, width: controlBar.frame.width-120, height: 30)
         
         loadingView.center = CGPoint(x: frame.width/2, y: frame.height/2)
@@ -264,18 +272,40 @@ class DDPlayer: UIControl, WebSocketDelegate {
     }
     
     @objc func volumeBtnClick() {
-        if volumeBar.alpha == 0 {
-            bringSubviewToFront(volumeBar)
-            volumeBar.alpha = 1
-            Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (timer) in
-                if !self.isVolumeSliderDown {
-                    self.volumeBar.alpha = 0
-                }
-            }
-        }else{
-            volumeBar.alpha = 0
+//        if volumeBar.alpha == 0 {
+//            bringSubviewToFront(volumeBar)
+//            volumeBar.alpha = 1
+//            Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (timer) in
+//                if !self.isVolumeSliderDown {
+//                    self.volumeBar.alpha = 0
+//                }
+//            }
+//        }else{
+//            volumeBar.alpha = 0
+//        }
+        volumePopup = UIAlertController(title: nameBtn.title(for: .normal), message: "\n\n\n\n", preferredStyle: .actionSheet)
+        
+        var sliderWidth:CGFloat = 180
+        if UIDevice.current.userInterfaceIdiom == .phone, let m = mainVC {
+            sliderWidth = 250
         }
         
+        muteBtn.frame = CGRect(x: 20, y: 80, width: 30, height: 30)
+        volumePopup.view.addSubview(muteBtn)
+        
+        volumeSlider.frame = CGRect(x: 50, y: 80, width: sliderWidth, height: 30)
+        volumePopup.view.addSubview(volumeSlider)
+        
+        volumeLabel.frame = CGRect(x: 50+sliderWidth, y: 80, width: 30, height: 30)
+        volumePopup.view.addSubview(volumeLabel)
+        
+        
+        volumePopup.addAction(UIAlertAction(title: "关闭", style: .cancel, handler: nil))
+        if let pop = volumePopup.popoverPresentationController {
+            pop.sourceView = hdBtn
+            pop.sourceRect = hdBtn.bounds
+        }
+        mainVC?.present(volumePopup, animated: true, completion: nil)
     }
     
     func setVolume(_ vol: Float) {
@@ -289,6 +319,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
     func toggleMute() -> Bool {
 //        volume = mute ? 0 : 0.5
         volumeSlider.value = volumeSlider.value > 0 ? 0 : 0.5
+        volumeLabel.text = "\(Int(volumeSlider.value * 100))"
         if let p = player {
             p.volume = volumeSlider.value * (mainVC?.globalVolume ?? 1)
         }
@@ -324,6 +355,8 @@ class DDPlayer: UIControl, WebSocketDelegate {
         if let p = player {
             p.volume = volumeSlider.value * (mainVC?.globalVolume ?? 1)
         }
+        
+        volumeLabel.text = "\(Int(volumeSlider.value * 100))"
     }
     
     @objc func volumeSliderDown() {
