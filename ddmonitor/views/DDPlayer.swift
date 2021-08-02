@@ -50,6 +50,8 @@ class DDPlayer: UIControl, WebSocketDelegate {
     var volumePopup: UIAlertController!
     var volumeLabel: UILabel!
     
+    var btnsGroup: UIView!
+    
     init(id: Int) {
         super.init(frame: .zero)
 //        layer.borderWidth = 1
@@ -66,32 +68,35 @@ class DDPlayer: UIControl, WebSocketDelegate {
         controlBar.alpha = 0
         addSubview(controlBar)
         
+        btnsGroup = UIView(frame: CGRect(x: 0, y: 0, width: 120, height: 30))
+        controlBar.addSubview(btnsGroup)
+        
         let refreshBtn = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
         refreshBtn.setTitleColor(.white, for: .normal)
         refreshBtn.setTitle("\u{e618}", for: .normal)
         refreshBtn.titleLabel?.font = UIFont(name: "iconfont", size: 18)
-        controlBar.addSubview(refreshBtn)
+        btnsGroup.addSubview(refreshBtn)
         refreshBtn.addTarget(self, action: #selector(refreshBtnClick), for: .touchUpInside)
         
         let volumeBtn = UIButton(frame: CGRect(x: 30, y: 0, width: 30, height: 30))
         volumeBtn.setTitleColor(.white, for: .normal)
         volumeBtn.setTitle("\u{e606}", for: .normal)
         volumeBtn.titleLabel?.font = UIFont(name: "iconfont", size: 20)
-        controlBar.addSubview(volumeBtn)
+        btnsGroup.addSubview(volumeBtn)
         volumeBtn.addTarget(self, action: #selector(volumeBtnClick), for: .touchUpInside)
         
         let danmuBtn = UIButton(frame: CGRect(x: 60, y: 0, width: 30, height: 30))
         danmuBtn.setTitleColor(.white, for: .normal)
         danmuBtn.setTitle("\u{e696}", for: .normal)
         danmuBtn.titleLabel?.font = UIFont(name: "iconfont", size: 20)
-        controlBar.addSubview(danmuBtn)
+        btnsGroup.addSubview(danmuBtn)
         danmuBtn.addTarget(self, action: #selector(danmuBtnClick), for: .touchUpInside)
         
-        hdBtn = UIButton(frame: CGRect(x: 90, y: 0, width: 40, height: 30))
+        hdBtn = UIButton(frame: CGRect(x: 90, y: 0, width: 30, height: 30))
         hdBtn.setTitleColor(.white, for: .normal)
         hdBtn.setTitle("流畅", for: .normal)
-        hdBtn.titleLabel?.font = .systemFont(ofSize: 13)
-        controlBar.addSubview(hdBtn)
+        hdBtn.titleLabel?.font = .systemFont(ofSize: 11)
+        btnsGroup.addSubview(hdBtn)
         hdBtn.addTarget(self, action: #selector(hdBtnClick), for: .touchUpInside)
         
         nameBtn = UIButton()
@@ -100,7 +105,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
         nameBtn.contentHorizontalAlignment = .left
 //        nameBtn.titleEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         nameBtn.titleLabel?.lineBreakMode = .byTruncatingTail
-        nameBtn.titleLabel?.font = .systemFont(ofSize: 16)
+        nameBtn.titleLabel?.font = .systemFont(ofSize: 14)
         controlBar.addSubview(nameBtn)
         nameBtn.addTarget(self, action: #selector(nameBtnClick), for: .touchUpInside)
         
@@ -214,7 +219,15 @@ class DDPlayer: UIControl, WebSocketDelegate {
         controlBar.frame = CGRect(x: 0, y: frame.height-30, width: frame.width, height: 30)
         volumeBar.frame = CGRect(x: 30, y: frame.height-60, width: frame.width-30 > 150 ? 150 : frame.width-30, height: 30)
 //        volumeSlider.frame = CGRect(x: 30, y: 0, width: volumeBar.frame.width-30, height: 30)
-        nameBtn.frame = CGRect(x: 130, y: 0, width: controlBar.frame.width-120, height: 30)
+        
+        var btnGroupWidth = btnsGroup.frame.width + 4
+        if frame.width < 180 {
+            btnGroupWidth = 4
+            btnsGroup.alpha = 0
+        }else{
+            btnsGroup.alpha = 1
+        }
+        nameBtn.frame = CGRect(x: btnGroupWidth, y: 0, width: controlBar.frame.width-btnGroupWidth, height: 30)
         
         loadingView.center = CGPoint(x: frame.width/2, y: frame.height/2)
         
@@ -246,6 +259,13 @@ class DDPlayer: UIControl, WebSocketDelegate {
             controlBar.alpha = 0
             volumeBar.alpha = 0
         }
+        if UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight {
+            if let m = mainVC {
+                m.landscapeShowNavbar = !m.landscapeShowNavbar
+                m.navbar.alpha = m.landscapeShowNavbar ? 1 : 0
+            }
+        }
+        
     }
     
     func showControlBar() {
@@ -286,7 +306,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
         volumePopup = UIAlertController(title: nameBtn.title(for: .normal), message: "\n\n\n\n", preferredStyle: .actionSheet)
         
         var sliderWidth:CGFloat = 180
-        if UIDevice.current.userInterfaceIdiom == .phone, let m = mainVC {
+        if UIDevice.current.userInterfaceIdiom == .phone {
             sliderWidth = 250
         }
         
@@ -311,6 +331,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
     func setVolume(_ vol: Float) {
 //        volume = vol
         volumeSlider.value = vol
+        volumeLabel.text = "\(Int(volumeSlider.value * 100))"
         if let p = player {
             p.volume = volumeSlider.value * (mainVC?.globalVolume ?? 1)
         }
@@ -407,9 +428,26 @@ class DDPlayer: UIControl, WebSocketDelegate {
     @objc func nameBtnClick() {
         if let roomid = roomId {
             let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            
+            if frame.width < 180 {
+                alert.addAction(UIAlertAction(title: "刷新", style: .default, handler: { act in
+                    self.refreshBtnClick()
+                }))
+                alert.addAction(UIAlertAction(title: "音量调节", style: .default, handler: { act in
+                    self.volumeBtnClick()
+                }))
+                alert.addAction(UIAlertAction(title: _2333 ? "弹幕设置" : "日志设置", style: .default, handler: { act in
+                    self.danmuBtnClick()
+                }))
+                alert.addAction(UIAlertAction(title: "切换画质", style: .default, handler: { act in
+                    self.hdBtnClick()
+                }))
+            }
+            
             alert.addAction(UIAlertAction(title: "复制id \(roomid)", style: .default, handler: { (act) in
                 UIPasteboard.general.string = roomid
             }))
+            
             if _2333 {
                 alert.addAction(UIAlertAction(title: "跳转直播间", style: .default, handler: { (act) in
                     let openurl = URL(string: "bilibili://live/\(roomid)")!
@@ -483,14 +521,14 @@ class DDPlayer: UIControl, WebSocketDelegate {
             
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             
-            panView = UIImageView(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
+            panView = UIImageView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
             if let cachePath = self.cachePath {
                 panView?.image = UIImage(contentsOfFile: "\(cachePath)/face\(roomId!).png")
             }
             
             panView?.contentMode = .scaleAspectFill
             panView?.backgroundColor = .white
-            panView?.layer.cornerRadius = 30
+            panView?.layer.cornerRadius = 40
             panView?.clipsToBounds = true
             
             
@@ -592,12 +630,12 @@ class DDPlayer: UIControl, WebSocketDelegate {
         
         
         if !_2333 {
-            danmuView.text = "正在连接\n"
+            danmuView.text = "[系统] 正在连接\n"
             Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (timer) in
                 self.nameBtn.setTitle("#\(self.id+1): (离线)CAM\(roomId!)", for: .normal)
                 
                 if self.roomId == "1213262" {
-                    self.danmuView.text += "\n连接成功\n"
+                    self.danmuView.text += "\n[系统] 连接成功\n"
                     self.nameBtn.setTitle("#\(self.id+1): CAM\(roomId!)", for: .normal)
                     
 //                    self.playerItem = AVPlayerItem(url: Bundle.main.url(forResource: "1", withExtension: "mov")!)
@@ -614,6 +652,8 @@ class DDPlayer: UIControl, WebSocketDelegate {
                     self.player?.volume = self.volumeSlider.value
                     self.bringSubviewToFront(self.danmuView)
                     self.bringSubviewToFront(self.interpreterView)
+                }else{
+                    self.danmuView.text += "\n[系统] 连接超时\n"
                 }
             }
             return
@@ -723,6 +763,24 @@ class DDPlayer: UIControl, WebSocketDelegate {
             socketTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true, block: { (timer) in
                 client.write(data: Data([0,0,0,16,0,16,0,1,0,0,0,2,0,0,0,1]))
             })
+            DispatchQueue.main.async {
+                var danmuTextList = self.danmuView.text.components(separatedBy: "\n")
+                if danmuTextList.count > 40 {
+                    danmuTextList.removeSubrange(0..<2)
+                }
+                danmuTextList.append(contentsOf: ["", "[系统] 已连接" + (_2333 ? "弹幕" : "")])
+                self.danmuView.text = danmuTextList.joined(separator: "\n")
+                self.danmuView.scrollRangeToVisible(NSRange(location: self.danmuView.text.count, length: 1))
+                
+                var interpreterTextList = self.interpreterView.text.components(separatedBy: "\n")
+                if interpreterTextList.count > 40 {
+                    interpreterTextList.removeSubrange(0..<2)
+                }
+                interpreterTextList.append(contentsOf: ["", "[系统] 已连接" + (_2333 ? "弹幕" : "")])
+                self.interpreterView.text = interpreterTextList.joined(separator: "\n")
+                
+                self.interpreterView.scrollRangeToVisible(NSRange(location: self.interpreterView.text.count, length: 1))
+            }
             break
         case .binary(let data):
             if data[7] == 2 {
@@ -739,45 +797,66 @@ class DDPlayer: UIControl, WebSocketDelegate {
                         let nextLen = Int(unzipped[len+2])*256 + Int(unzipped[len+3])
                         if let jstr = String(data: Data(unzipped[len+16..<len+nextLen]), encoding: .utf8) {
                             let jo = JSON(parseJSON: jstr)
-                            if let joCmd = jo["cmd"].string, joCmd == "DANMU_MSG", let danmu = jo["info"][1].string {
+                            if let joCmd = jo["cmd"].string {
 //                                print("danmu", roomId, jo["info"][1].string)
-                                
-                                
-                                
-                                let splits = self.danmuOptions.interpreterChars.components(separatedBy: " ")
-                                var isInterpreterDanmu = false
-                                for s in splits {
-                                    if s != "" && danmu.starts(with: s) {
-                                        isInterpreterDanmu = true
-                                        break
+                                if joCmd == "DANMU_MSG", let danmu = jo["info"][1].string {
+                                    let splits = self.danmuOptions.interpreterChars.components(separatedBy: " ")
+                                    var isInterpreterDanmu = false
+                                    for s in splits {
+                                        if s != "" && danmu.starts(with: s) {
+                                            isInterpreterDanmu = true
+                                            break
+                                        }
+                                    }
+                                    
+                                    
+                                    
+                                    DispatchQueue.main.async {
+                                        var danmuTextList = self.danmuView.text.components(separatedBy: "\n")
+                                        if danmuTextList.count > 40 {
+                                            danmuTextList.removeSubrange(0..<2)
+                                        }
+                                        danmuTextList.append(contentsOf: ["", danmu])
+                                        self.danmuView.text = danmuTextList.joined(separator: "\n")
+    //                                    if self.danmuView.contentSize.height > self.danmuView.frame.height {
+    //                                        self.danmuView.setContentOffset(CGPoint(x: 0, y: self.danmuView.contentSize.height - self.danmuView.frame.height), animated: true)
+    //                                    }
+                                        self.danmuView.scrollRangeToVisible(NSRange(location: self.danmuView.text.count, length: 1))
+                                        
+                                        if isInterpreterDanmu {
+                                            var interpreterTextList = self.interpreterView.text.components(separatedBy: "\n")
+                                            if interpreterTextList.count > 40 {
+                                                interpreterTextList.removeSubrange(0..<2)
+                                            }
+                                            interpreterTextList.append(contentsOf: ["", danmu])
+                                            self.interpreterView.text = interpreterTextList.joined(separator: "\n")
+                                            
+                                            self.interpreterView.scrollRangeToVisible(NSRange(location: self.interpreterView.text.count, length: 1))
+                                        }
                                     }
                                 }
                                 
-                                
-                                
-                                DispatchQueue.main.async {
-                                    var danmuTextList = self.danmuView.text.components(separatedBy: "\n")
-                                    if danmuTextList.count > 40 {
-                                        danmuTextList.removeSubrange(0..<2)
-                                    }
-                                    danmuTextList.append(contentsOf: ["", danmu])
-                                    self.danmuView.text = danmuTextList.joined(separator: "\n")
-//                                    if self.danmuView.contentSize.height > self.danmuView.frame.height {
-//                                        self.danmuView.setContentOffset(CGPoint(x: 0, y: self.danmuView.contentSize.height - self.danmuView.frame.height), animated: true)
-//                                    }
-                                    self.danmuView.scrollRangeToVisible(NSRange(location: self.danmuView.text.count, length: 1))
-                                    
-                                    if isInterpreterDanmu {
+                                if joCmd == "SUPER_CHAT_MESSAGE", let danmu = jo["data"]["message"].string {
+                                    DispatchQueue.main.async {
+                                        var danmuTextList = self.danmuView.text.components(separatedBy: "\n")
+                                        if danmuTextList.count > 40 {
+                                            danmuTextList.removeSubrange(0..<2)
+                                        }
+                                        danmuTextList.append(contentsOf: ["", "[SC] \(danmu)"])
+                                        self.danmuView.text = danmuTextList.joined(separator: "\n")
+                                        self.danmuView.scrollRangeToVisible(NSRange(location: self.danmuView.text.count, length: 1))
+                                        
                                         var interpreterTextList = self.interpreterView.text.components(separatedBy: "\n")
                                         if interpreterTextList.count > 40 {
                                             interpreterTextList.removeSubrange(0..<2)
                                         }
-                                        interpreterTextList.append(contentsOf: ["", danmu])
+                                        interpreterTextList.append(contentsOf: ["", "[SC] \(danmu)"])
                                         self.interpreterView.text = interpreterTextList.joined(separator: "\n")
                                         
                                         self.interpreterView.scrollRangeToVisible(NSRange(location: self.interpreterView.text.count, length: 1))
                                     }
                                 }
+                                
                             }
                         }
                         len += nextLen
@@ -786,9 +865,45 @@ class DDPlayer: UIControl, WebSocketDelegate {
             }
             break
         case .error(_):
+            DispatchQueue.main.async {
+                var danmuTextList = self.danmuView.text.components(separatedBy: "\n")
+                if danmuTextList.count > 40 {
+                    danmuTextList.removeSubrange(0..<2)
+                }
+                danmuTextList.append(contentsOf: ["", "[系统] 发生了错误"])
+                self.danmuView.text = danmuTextList.joined(separator: "\n")
+                self.danmuView.scrollRangeToVisible(NSRange(location: self.danmuView.text.count, length: 1))
+                
+                var interpreterTextList = self.interpreterView.text.components(separatedBy: "\n")
+                if interpreterTextList.count > 40 {
+                    interpreterTextList.removeSubrange(0..<2)
+                }
+                interpreterTextList.append(contentsOf: ["", "[系统] 发生了错误"])
+                self.interpreterView.text = interpreterTextList.joined(separator: "\n")
+                
+                self.interpreterView.scrollRangeToVisible(NSRange(location: self.interpreterView.text.count, length: 1))
+            }
             break
         case .disconnected(_, _):
             print("disconenct",roomId)
+            DispatchQueue.main.async {
+                var danmuTextList = self.danmuView.text.components(separatedBy: "\n")
+                if danmuTextList.count > 40 {
+                    danmuTextList.removeSubrange(0..<2)
+                }
+                danmuTextList.append(contentsOf: ["", "[系统] \(_2333 ? "弹幕" : "")已断开，请刷新"])
+                self.danmuView.text = danmuTextList.joined(separator: "\n")
+                self.danmuView.scrollRangeToVisible(NSRange(location: self.danmuView.text.count, length: 1))
+                
+                var interpreterTextList = self.interpreterView.text.components(separatedBy: "\n")
+                if interpreterTextList.count > 40 {
+                    interpreterTextList.removeSubrange(0..<2)
+                }
+                interpreterTextList.append(contentsOf: ["", "[系统] \(_2333 ? "弹幕" : "")已断开，请刷新"])
+                self.interpreterView.text = interpreterTextList.joined(separator: "\n")
+                
+                self.interpreterView.scrollRangeToVisible(NSRange(location: self.interpreterView.text.count, length: 1))
+            }
             break
         default:
             break

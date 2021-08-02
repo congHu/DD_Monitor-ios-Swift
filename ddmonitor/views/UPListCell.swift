@@ -38,11 +38,11 @@ class UPListCell: UITableViewCell {
         if ges.state == .began {
             print("longpress")
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            panView = UIImageView(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
+            panView = UIImageView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
             panView?.image = cardView.faceImage.image
             panView?.contentMode = .scaleAspectFill
             panView?.backgroundColor = .white
-            panView?.layer.cornerRadius = 30
+            panView?.layer.cornerRadius = 40
             panView?.clipsToBounds = true
             
             mainVC = (UIApplication.shared.delegate as! AppDelegate).mainVC
@@ -67,10 +67,10 @@ class UPListCell: UITableViewCell {
                 //     m.upListView.showAnimate()
                 // }
 
-                if let p = m.ddLayout.getPlayer(at: p.center) {
-                    if p != inPlayer {
-                        inPlayer = p
-                        p.showControlBar()
+                if let player = m.ddLayout.getPlayer(at: p.center) {
+                    if player != inPlayer {
+                        inPlayer = player
+                        player.showControlBar()
                     }
                 }else{
                     inPlayer = nil
@@ -86,12 +86,14 @@ class UPListCell: UITableViewCell {
         
         if ges.state == .ended {
             if var p = panView?.center, let m = mainVC {
-                if !m.upListView.isShow {
+                if !m.cancelDragView.frame.contains(p) {
                     p.x -= m.mainLeft
                     p.y -= m.navTop
                     m.ddLayout.setRoomId(at: p, roomId: roomId)
-                    
                 }
+//                if !m.upListView.isShow {
+//                }
+                
             }
             panView?.removeFromSuperview()
 
