@@ -511,6 +511,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
     
     var panView: UIImageView?
     var mainVC: ViewController?
+    var inPlayer: DDPlayer?
     @objc func doLongPress(_ ges: UILongPressGestureRecognizer) {
         if roomId == nil {
             return
@@ -518,6 +519,8 @@ class DDPlayer: UIControl, WebSocketDelegate {
         
         if ges.state == .began {
             print("longpress")
+            
+            showControlBar()
             
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             
@@ -538,8 +541,18 @@ class DDPlayer: UIControl, WebSocketDelegate {
         
         if ges.state == .changed {
             panView?.center = ges.location(in: mainVC?.view)
-            if let p = panView, let m = mainVC, p.center.x < m.view.frame.width - UPTableViewWidth - m.mainRight {
-                m.upListView.hideAnimate()
+//            if let p = panView, let m = mainVC, p.center.x < m.view.frame.width - UPTableViewWidth - m.mainRight {
+//                m.upListView.hideAnimate()
+//            }
+            if let p = panView, let m = mainVC {
+                if let player = m.ddLayout.getPlayer(at: p.center) {
+                    if player != inPlayer {
+                        inPlayer = player
+                        player.showControlBar()
+                    }
+                }else{
+                    inPlayer = nil
+                }
             }
         }
         
