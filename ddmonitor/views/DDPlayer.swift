@@ -763,7 +763,7 @@ class DDPlayer: UIControl, WebSocketDelegate {
     func didReceive(event: WebSocketEvent, client: WebSocket) {
         switch event {
         case .connected(_):
-            let reqStr = "{\"roomid\":\(roomId!)}"
+            let reqStr = "{\"roomid\":\(roomId!),\"protover\":3}"
             var data = Data([
                 0,0,0,UInt8(reqStr.count)+16,
                 0,16,0,1,
@@ -796,18 +796,23 @@ class DDPlayer: UIControl, WebSocketDelegate {
             }
             break
         case .binary(let data):
-            if data[7] == 2 {
+            print([UInt8](data[0..<16]))
+            if data[7] == 3 {
 //                print("data7==2", data.count)
 //                if let unzipped = data[16..<data.count].inflate() {
 //                    print("inflate")
 //                    print(String(data: unzipped, encoding: .utf8))
 //                }
-                let (unzipped,err) = InflateStream().write([UInt8](data[16..<data.count]), flush: true)
-                if err == nil {
+                let unzippedData = NSData(data: data[16..<data.count]).decompressBrotli()
+//                let (unzipped,err) = InflateStream().write([UInt8](data[16..<data.count]), flush: true)
+//                if err == nil {
+//                print(unzippedData)
+                if let unzipped = unzippedData {
 //                    print(String(data: Data(unzipped), encoding: .utf8))
                     var len = 0
                     while len < unzipped.count {
                         let nextLen = Int(unzipped[len+2])*256 + Int(unzipped[len+3])
+//                        print(nextLen)
                         if let jstr = String(data: Data(unzipped[len+16..<len+nextLen]), encoding: .utf8) {
                             let jo = JSON(parseJSON: jstr)
                             if let joCmd = jo["cmd"].string {

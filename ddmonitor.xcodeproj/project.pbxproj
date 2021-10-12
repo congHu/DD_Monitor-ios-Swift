@@ -35,6 +35,8 @@
 		ACF27BAD260243EE003878BD /* DDPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF27BAC260243EE003878BD /* DDPlayer.swift */; };
 		ACF27BB326025757003878BD /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = ACF27BB226025757003878BD /* Alamofire */; };
 		ACFCA0A3260ADAFE0010CA4C /* 1.mov in Resources */ = {isa = PBXBuildFile; fileRef = ACFCA0A2260ADAFE0010CA4C /* 1.mov */; };
+		ACFF24EB2715E2D000D26422 /* OCBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = ACFF24EA2715E2D000D26422 /* OCBridge.m */; };
+		C31409B0E0F6961B33FC492E /* libPods-ddmonitor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B4670AD79FEEF068881E339F /* libPods-ddmonitor.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A898712F8F5A078000F11BE6 /* Pods-ddmonitor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ddmonitor.debug.xcconfig"; path = "Target Support Files/Pods-ddmonitor/Pods-ddmonitor.debug.xcconfig"; sourceTree = "<group>"; };
 		AC799EB326047E5C00B1049A /* UPInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UPInfo.swift; sourceTree = "<group>"; };
 		AC799ECE2604F8D600B1049A /* ZStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZStream.swift; sourceTree = "<group>"; };
 		AC799EDA26058F2800B1049A /* VolumeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeViewController.swift; sourceTree = "<group>"; };
@@ -88,6 +91,11 @@
 		ACF27BA42601FB2A003878BD /* DDLayoutData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DDLayoutData.swift; sourceTree = "<group>"; };
 		ACF27BAC260243EE003878BD /* DDPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DDPlayer.swift; sourceTree = "<group>"; };
 		ACFCA0A2260ADAFE0010CA4C /* 1.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = 1.mov; sourceTree = "<group>"; };
+		ACFF24E82715E2D000D26422 /* ddmonitor-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ddmonitor-Bridging-Header.h"; sourceTree = "<group>"; };
+		ACFF24E92715E2D000D26422 /* OCBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCBridge.h; sourceTree = "<group>"; };
+		ACFF24EA2715E2D000D26422 /* OCBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCBridge.m; sourceTree = "<group>"; };
+		B4670AD79FEEF068881E339F /* libPods-ddmonitor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ddmonitor.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB32E44F9467EEC7FB8E7462 /* Pods-ddmonitor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ddmonitor.release.xcconfig"; path = "Target Support Files/Pods-ddmonitor/Pods-ddmonitor.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +106,7 @@
 				AC8627E126025BC900A4E1D8 /* SwiftyJSON in Frameworks */,
 				ACF27BB326025757003878BD /* Alamofire in Frameworks */,
 				AC799EC32604ED3400B1049A /* Starscream in Frameworks */,
+				C31409B0E0F6961B33FC492E /* libPods-ddmonitor.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,6 +127,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8A8C9EB893314754969AFDB6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B4670AD79FEEF068881E339F /* libPods-ddmonitor.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9F1B65A1813F135E910660F7 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A898712F8F5A078000F11BE6 /* Pods-ddmonitor.debug.xcconfig */,
+				BB32E44F9467EEC7FB8E7462 /* Pods-ddmonitor.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		AC799ECD2604F8BD00B1049A /* utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -171,6 +197,8 @@
 				ACF27B662600B39C003878BD /* ddmonitorTests */,
 				ACF27B712600B39D003878BD /* ddmonitorUITests */,
 				ACF27B4E2600B39A003878BD /* Products */,
+				9F1B65A1813F135E910660F7 /* Pods */,
+				8A8C9EB893314754969AFDB6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -199,6 +227,9 @@
 				ACF27B5B2600B39C003878BD /* LaunchScreen.storyboard */,
 				ACF27B5E2600B39C003878BD /* Info.plist */,
 				ACFCA0A2260ADAFE0010CA4C /* 1.mov */,
+				ACFF24E92715E2D000D26422 /* OCBridge.h */,
+				ACFF24EA2715E2D000D26422 /* OCBridge.m */,
+				ACFF24E82715E2D000D26422 /* ddmonitor-Bridging-Header.h */,
 			);
 			path = ddmonitor;
 			sourceTree = "<group>";
@@ -228,6 +259,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = ACF27B772600B39D003878BD /* Build configuration list for PBXNativeTarget "ddmonitor" */;
 			buildPhases = (
+				C23F804DAB1EB962423DFFD2 /* [CP] Check Pods Manifest.lock */,
 				ACF27B492600B39A003878BD /* Sources */,
 				ACF27B4A2600B39A003878BD /* Frameworks */,
 				ACF27B4B2600B39A003878BD /* Resources */,
@@ -293,6 +325,7 @@
 				TargetAttributes = {
 					ACF27B4C2600B39A003878BD = {
 						CreatedOnToolsVersion = 12.4;
+						LastSwiftMigration = 1250;
 					};
 					ACF27B622600B39C003878BD = {
 						CreatedOnToolsVersion = 12.4;
@@ -359,6 +392,31 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		C23F804DAB1EB962423DFFD2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ddmonitor-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		ACF27B492600B39A003878BD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -376,6 +434,7 @@
 				AC8627E82603B0A200A4E1D8 /* UPListView.swift in Sources */,
 				ACC0A0842607357800F918CB /* UidImportViewController.swift in Sources */,
 				ACF27BA02600EC8A003878BD /* DDLayout.swift in Sources */,
+				ACFF24EB2715E2D000D26422 /* OCBridge.m in Sources */,
 				ACC0A08A2607441100F918CB /* UPCellView.swift in Sources */,
 				ACC0A07A2606180200F918CB /* DanmuOption.swift in Sources */,
 				ACC0A0752605FB7100F918CB /* DanmuOptionsViewController.swift in Sources */,
@@ -545,9 +604,11 @@
 		};
 		ACF27B782600B39D003878BD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A898712F8F5A078000F11BE6 /* Pods-ddmonitor.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ddmonitor/ddmonitor.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -562,6 +623,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.hyc.d2monitor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "ddmonitor/ddmonitor-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -569,9 +632,11 @@
 		};
 		ACF27B792600B39D003878BD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BB32E44F9467EEC7FB8E7462 /* Pods-ddmonitor.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ddmonitor/ddmonitor.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -586,6 +651,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.hyc.d2monitor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "ddmonitor/ddmonitor-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

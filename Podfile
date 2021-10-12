@@ -1,0 +1,2 @@
+target 'ddmonitor'
+pod 'BrotliKit'

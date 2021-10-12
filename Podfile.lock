@@ -1,0 +1,16 @@
+PODS:
+  - BrotliKit (1.0.2)
+
+DEPENDENCIES:
+  - BrotliKit
+
+SPEC REPOS:
+  trunk:
+    - BrotliKit
+
+SPEC CHECKSUMS:
+  BrotliKit: 7eb3640b2c206cd4410208696c27ef83e95f43d5
+
+PODFILE CHECKSUM: a9de653cdea13521bc326adb266ce3d7241dc8f1
+
+COCOAPODS: 1.9.1
